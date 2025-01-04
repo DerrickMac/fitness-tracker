@@ -5,13 +5,14 @@ from app.forms import LoginForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
-from app.models import User
+from app.models import User, Workout
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('index.html', title='Home', workouts=workouts)
+    user_workouts = db.session.scalars(sa.select(Workout).where(Workout.owner == current_user)).all()
+    return render_template('index.html', title='Home', workouts=user_workouts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
