@@ -6,6 +6,13 @@ from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
 from app.models import User, Workout
+from datetime import datetime, timezone
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(timezone.utc)
+        db.session.commit()
 
 @app.route('/')
 @app.route('/index')
