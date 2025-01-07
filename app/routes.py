@@ -56,3 +56,10 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+    user_workouts = db.session.scalars(sa.select(Workout).where(Workout.owner == current_user)).all()
+    return render_template('user.html', user=user, workouts=user_workouts)
