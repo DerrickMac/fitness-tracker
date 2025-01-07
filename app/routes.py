@@ -61,5 +61,8 @@ def register():
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    user_workouts = db.session.scalars(sa.select(Workout).where(Workout.owner == current_user)).all()
+    user_workouts = [
+        {"owner": user, "name": "Biceps Curl"},
+        {"owner": user, "name": "Leg Press"}
+    ]
     return render_template('user.html', user=user, workouts=user_workouts)
