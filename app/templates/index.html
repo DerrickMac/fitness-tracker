@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
-    {% for workout in workouts %}
-        <div><p>Workout: <b>{{ workout.name }}</b>, Weight/Reps: {{workout.weight}}/{{ workout.reps  }}, Date {{workout.date}} </p></div>
+    {% for machine in machines %}
+        <div><p>Machine: <b>{{ machine.name }}</b>, Weight/Reps: {{machine.weight}}/{{ machine.reps  }}, Date {{machine.date}} </p></div>
     {% endfor %}
 {% endblock %}

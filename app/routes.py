@@ -5,7 +5,7 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
-from app.models import User, Workout
+from app.models import User, Machine
 from datetime import datetime, timezone
 
 @app.before_request
@@ -18,8 +18,8 @@ def before_request():
 @app.route('/index')
 @login_required
 def index():
-    user_workouts = db.session.scalars(sa.select(Workout).where(Workout.owner == current_user)).all()
-    return render_template('index.html', title='Home', workouts=user_workouts)
+    user_machines = db.session.scalars(sa.select(Machine).where(Machine.owner == current_user)).all()
+    return render_template('index.html', title='Home', machines=user_machines)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,11 +68,11 @@ def register():
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    user_workouts = [
+    user_machines = [
         {"owner": user, "name": "Biceps Curl"},
         {"owner": user, "name": "Leg Press"}
     ]
-    return render_template('user.html', user=user, workouts=user_workouts)
+    return render_template('user.html', user=user, machines=user_machines)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

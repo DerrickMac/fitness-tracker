@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
-    workouts: so.WriteOnlyMapped['Workout'] = so.relationship(back_populates='owner')
+    machines: so.WriteOnlyMapped['Machine'] = so.relationship(back_populates='owner')
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
         default=lambda: datetime.now(timezone.utc))
@@ -35,7 +35,7 @@ class User(UserMixin, db.Model):
         print(f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}')
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
-class Workout(db.Model):
+class Machine(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     reps: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False, default=1)
@@ -43,7 +43,7 @@ class Workout(db.Model):
     date: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
 
-    owner: so.Mapped[User] = so.relationship(back_populates='workouts')
+    owner: so.Mapped[User] = so.relationship(back_populates='machines')
 
     def __repr__(self):
-        return '<Workout {}>'.format(self.name)
+        return '<Machine {}>'.format(self.name)
