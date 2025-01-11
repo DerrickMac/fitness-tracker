@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, DateTimeField, SelectField, IntegerField
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, length, Optional
 import sqlalchemy as sa
 from app import db
 from app.models import User
+from datetime import datetime
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -50,3 +51,12 @@ class EditProfileForm(FlaskForm):
             # if DB finds a match to the submitted username change, throw error
             if user is not None:
                 raise ValidationError('Please use a different username')
+
+class WorkoutForm(FlaskForm):
+    date = DateTimeField('Date', format='%Y-%m-%d', default=datetime.now(), validators=[DataRequired()])
+    exercise_type = SelectField('Exercise Type', choices=[('machine', 'Machine'), ('cardio', 'Cardio')], validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired()])
+    weight = IntegerField('Weight (lbs)', validators=[Optional()])
+    reps = IntegerField('Reps', validators=[Optional()])
+    distance = IntegerField('Distance (miles)', validators=[Optional()])
+    submit = SubmitField('Submit')

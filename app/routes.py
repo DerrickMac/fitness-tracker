@@ -1,11 +1,11 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request
 from app import app
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, WorkoutForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
-from app.models import User, Workout
+from app.models import User, Workout, MachineExercise, CardioExercise
 from datetime import datetime, timezone
 
 @app.before_request
@@ -20,10 +20,14 @@ def before_request():
 def index():
     query_workouts = db.session.scalars(sa.select(Workout).where(Workout.user == current_user)).all()
     user_workouts = []
+    cardio_workouts = []
     for workout in query_workouts:
         for machine in workout.machine_exercises:
             user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight, "date": workout.date})
-    return render_template('index.html', title='Home', workouts=user_workouts)
+        for cardio in workout.cardio_exercises:
+            cardio_workouts.append({"name": cardio.name, "distance": cardio.distance, "date": workout.date})
+
+    return render_template('index.html', title='Home', workouts=user_workouts, cardios=cardio_workouts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -95,3 +99,49 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/workout', methods=['GET', 'POST'])
+@login_required
+def create_workout():
+    form = WorkoutForm()
+    if form.validate_on_submit():
+        # 1. Create a new workout row
+        new_workout = Workout(
+            date=form.date.data,        # form.date is a DateField
+            user_id=current_user.id     # Link to current user
+        )
+        db.session.add(new_workout)
+        db.session.flush()  
+        # flush to get new_workout.id, though you can do it after as well
+
+        # 2. Depending on exercise_type, create a new exercise object
+        if form.exercise_type.data == "machine":
+            machine_ex = MachineExercise(
+                name=form.name.data,
+                weight=form.weight.data or 0,
+                reps=form.reps.data or 0
+            )
+            db.session.add(machine_ex)
+            db.session.flush()  
+
+            # Link it
+            new_workout.machine_exercises.append(machine_ex)
+
+        elif form.exercise_type.data == "cardio":
+            cardio_ex = CardioExercise(
+                name=form.name.data,
+                distance=form.distance.data or 0
+            )
+            db.session.add(cardio_ex)
+            db.session.flush()
+
+            # Link it
+            new_workout.cardio_exercises.append(cardio_ex)
+
+        # 3. Commit all changes (workout + exercise + relationship)
+        db.session.commit()
+
+        flash("New workout created successfully!")
+        return redirect(url_for('index'))
+        
+    return render_template('create_workout.html', title='Create Workout', form=form)

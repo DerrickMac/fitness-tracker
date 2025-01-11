@@ -5,4 +5,7 @@
     {% for workout in workouts %}
         <div><p>Machine: <b>{{ workout["name"] }}</b>, Weight/Reps: {{ workout["weight"] }}/{{ workout["reps"] }}, Date {{workout.date}} </p></div>
     {% endfor %}
+    {% for cardio in cardios %}
+        <div><p>Cardio: <b>{{ cardio["name"] }}</b>, Distance(miles): {{ cardio["distance"] }}, Date {{cardio.date}} </p></div>
+    {% endfor %}
 {% endblock %}
