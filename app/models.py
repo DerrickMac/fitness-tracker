@@ -42,7 +42,6 @@ class User(UserMixin, db.Model):
     
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        print(f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}')
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
 class Workout(db.Model):

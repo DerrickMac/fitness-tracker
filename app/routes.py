@@ -1,11 +1,11 @@
 from flask_login import current_user, login_user, logout_user, login_required
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request
 from app import app
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
-from app.models import User, MachineExercise
+from app.models import User, Workout
 from datetime import datetime, timezone
 
 @app.before_request
@@ -18,8 +18,12 @@ def before_request():
 @app.route('/index')
 @login_required
 def index():
-    user_machine_exercises = db.session.scalars(sa.select(MachineExercise).where(MachineExercise.owner == current_user)).all()
-    return render_template('index.html', title='Home', machines=user_machine_exercises)
+    query_workouts = db.session.scalars(sa.select(Workout).where(Workout.user == current_user)).all()
+    user_workouts = []
+    for workout in query_workouts:
+        for machine in workout.machine_exercises:
+            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight, "date": workout.date})
+    return render_template('index.html', title='Home', workouts=user_workouts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,11 +72,14 @@ def register():
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    user_machines = [
-        {"owner": user, "name": "Biceps Curl"},
-        {"owner": user, "name": "Leg Press"}
-    ]
-    return render_template('user.html', user=user, machines=user_machines)
+    print(f"user is: {user}")
+    print(f"user has workout object: {user.workouts}")
+    print(f"user has workout object: {user.workouts[0].machine_exercises[0].name}")
+    user_workouts = []
+    for workout in user.workouts:
+        for machine in workout.machine_exercises:
+            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight})
+    return render_template('user.html', user=user, workouts=user_workouts)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
