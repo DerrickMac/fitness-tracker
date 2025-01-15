@@ -78,7 +78,6 @@ def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
     print(f"user is: {user}")
     print(f"user has workout object: {user.workouts}")
-    print(f"user has workout object: {user.workouts[0].machine_exercises[0].name}")
     user_workouts = []
     for workout in user.workouts:
         for machine in workout.machine_exercises:

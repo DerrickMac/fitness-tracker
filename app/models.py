@@ -55,7 +55,7 @@ class Workout(db.Model):
 
 class MachineExercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True, unique=True)
+    name: Mapped[str] = mapped_column(String(64), index=True)
     reps: Mapped[int] = mapped_column(Integer, default=1)
     weight: Mapped[int] = mapped_column(Integer, default=0)
     workouts: Mapped[List['Workout']] = relationship(secondary='workout_machine_exercise', back_populates='machine_exercises')
@@ -65,7 +65,7 @@ class MachineExercise(db.Model):
     
 class CardioExercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True, unique=True)
+    name: Mapped[str] = mapped_column(String(64), index=True)
     distance: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     workouts: Mapped[List['Workout']] = relationship(secondary='workout_cardio_exercise', back_populates='cardio_exercises')
 
