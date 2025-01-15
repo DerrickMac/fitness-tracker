@@ -76,13 +76,16 @@ def register():
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    print(f"user is: {user}")
-    print(f"user has workout object: {user.workouts}")
+    query_workouts = db.session.scalars(sa.select(Workout).where(Workout.user == current_user)).all()
     user_workouts = []
-    for workout in user.workouts:
+    cardio_workouts = []
+    for workout in query_workouts:
         for machine in workout.machine_exercises:
-            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight})
-    return render_template('user.html', user=user, workouts=user_workouts)
+            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight, "date": workout.date})
+        for cardio in workout.cardio_exercises:
+            cardio_workouts.append({"name": cardio.name, "distance": cardio.distance, "date": workout.date})
+
+    return render_template('user.html', user=user, workouts=user_workouts, cardios=cardio_workouts)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
