@@ -10,3 +10,4 @@ sqlalchemy
 python-dotenv
 flask_migrate
 pyjwt
+flask-moment
