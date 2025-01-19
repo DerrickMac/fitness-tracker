@@ -70,13 +70,14 @@ def user(username):
         return redirect(url_for('index'))
      
     page = request.args.get('page', 1, type=int)
-    workouts = current_user.get_user_workouts()
-    page_workouts = db.paginate(workouts, page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
-    next_url = url_for('user', username=username, page=page_workouts.next_num) \
-        if page_workouts.has_next else None
-    prev_url = url_for('user', username=username, page=page_workouts.prev_num) \
-        if page_workouts.has_prev else None
-    return render_template('user.html', user=current_user, workouts=page_workouts.items, next_url=next_url, prev_url=prev_url)
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+    query = user.workouts.order_by(Workout.date.desc())
+    workouts = db.paginate(query, page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
+    next_url = url_for('user', username=username, page=workouts.next_num) \
+        if workouts.has_next else None
+    prev_url = url_for('user', username=username, page=workouts.prev_num) \
+        if workouts.has_prev else None
+    return render_template('user.html', user=current_user, workouts=workouts.items, next_url=next_url, prev_url=prev_url)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
