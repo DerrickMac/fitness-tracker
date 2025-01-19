@@ -18,16 +18,7 @@ def before_request():
 @app.route('/index')
 @login_required
 def index():
-    query_workouts = db.session.scalars(sa.select(Workout).where(Workout.user == current_user)).all()
-    user_workouts = []
-    cardio_workouts = []
-    for workout in query_workouts:
-        for machine in workout.machine_exercises:
-            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight, "date": workout.date})
-        for cardio in workout.cardio_exercises:
-            cardio_workouts.append({"name": cardio.name, "distance": cardio.distance, "date": workout.date})
-
-    return render_template('index.html', title='Home', workouts=user_workouts, cardios=cardio_workouts)
+    return render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -75,17 +66,17 @@ def register():
 @app.route('/user/<username>')
 @login_required
 def user(username):
-    user = db.first_or_404(sa.select(User).where(User.username == username))
-    query_workouts = db.session.scalars(sa.select(Workout).where(Workout.user == current_user)).all()
-    user_workouts = []
-    cardio_workouts = []
-    for workout in query_workouts:
-        for machine in workout.machine_exercises:
-            user_workouts.append({"name": machine.name, "reps": machine.reps, "weight": machine.weight, "date": workout.date})
-        for cardio in workout.cardio_exercises:
-            cardio_workouts.append({"name": cardio.name, "distance": cardio.distance, "date": workout.date})
-
-    return render_template('user.html', user=user, workouts=user_workouts, cardios=cardio_workouts)
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+     
+    page = request.args.get('page', 1, type=int)
+    workouts = current_user.get_user_workouts()
+    page_workouts = db.paginate(workouts, page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
+    next_url = url_for('user', username=username, page=page_workouts.next_num) \
+        if page_workouts.has_next else None
+    prev_url = url_for('user', username=username, page=page_workouts.prev_num) \
+        if page_workouts.has_prev else None
+    return render_template('user.html', user=current_user, workouts=page_workouts.items, next_url=next_url, prev_url=prev_url)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required

@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     username: Mapped[str] = mapped_column(String(64), index=True, unique=True)
     email: Mapped[str] = mapped_column(String(120), index=True, unique=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(256))
-    workouts: Mapped[List['Workout']] = relationship(back_populates='user')
+    workouts: Mapped[List['Workout']] = relationship(back_populates='user', lazy='dynamic')
     about_me: Mapped[Optional[str]] = mapped_column(String(140))
     last_seen: Mapped[Optional[datetime]] = mapped_column(
         default=lambda: datetime.now(timezone.utc))
@@ -43,6 +43,9 @@ class User(UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+    
+    def get_user_workouts(self):
+        return self.workouts
 
 class Workout(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)

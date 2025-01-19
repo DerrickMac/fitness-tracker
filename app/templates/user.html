@@ -16,5 +16,11 @@
   </tr>
 </table>
 <hr />
-{% include '_workout.html' %} {%
-endblock %}
+{% include '_workout.html' %}
+{% if prev_url %}
+    <a href="{{ prev_url }}">Prev</a>
+{% endif %}
+{% if next_url %}
+    <a href="{{ next_url }}">Next</a>
+{% endif %}
+{% endblock %}
