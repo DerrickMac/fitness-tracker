@@ -1,18 +1,53 @@
-{% for workout in workouts %}
-  {% for machine in workout.machine_exercises %}
-    <div>
-      <p>
-        Machine: <b>{{ machine["name"] }}</b>, Weight/Reps: {{ machine["weight"]
-        }}/{{ machine["reps"] }}, Date {{workout.date}}
-      </p>
-    </div>
-  {% endfor %} 
-  {% for cardio in workout.cardio_exercises %}
-    <div>
-      <p>
-        Cardio: <b>{{ cardio["name"] }}</b>, Distance(miles): {{ cardio["distance"]
-        }}, Date {{workout.date}}
-      </p>
-    </div>
-  {% endfor %}
-{% endfor %}
+<div class="table-responsive">
+  <h2>Machine Workouts</h2>
+  <table class="table table-striped table-hover border">   
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Type</th>
+        <th scope="col">Name</th>
+        <th scope="col">Weight (lbs)</th>
+        <th scope="col">Reps</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for workout in workouts %}
+        {% for machine in workout.machine_exercises %}
+        <tr>
+          <td><strong>Machine</strong></td>
+          <td>{{ machine.name }}</td>
+          <td>{{ machine.weight }}</td>
+          <td>{{ machine.reps }}</td>
+          <td>{{ workout.date }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Cardio Workouts</h2>
+  <table class="table table-striped table-hover border">   
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">Type</th>
+        <th scope="col">Name</th>
+        <th scope="col">Distance</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for workout in workouts %}
+        {% for cardio in workout.cardio_exercises %}
+        <tr>
+          <td><strong>Cardio</strong></td>
+          <td>{{ cardio.name }}</td>
+          <td>{{ cardio.distance }} mile(s)</td>
+          <td>{{ workout.date }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -1,69 +1,36 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
 <h1>Create Workout</h1>
-<form action="" method="post">
-  {{ form.hidden_tag() }}
-  <p>
-    {{ form.date.label }}<br />
-    {{ form.date(type="date") }}<br />
-    {% for error in form.date.errors %}
-    <span style="color: red">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>
-    {{ form.exercise_type.label }}<br />
-    {{ form.exercise_type() }}<br />
-    {% for error in form.exercise_type.errors %}
-    <span style="color: red">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>
-    {{ form.name.label }}<br />
-    {{ form.name() }}<br />
-    {% for error in form.name.errors %}
-    <span style="color: red">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <div id="machineFields">
-    <label for="weight">Weight</label>
-    {{ form.weight() }}<br />
-    <label for="reps">Reps</label>
-    {{ form.reps() }}
-  </div>
+{{ wtf.quick_form(form) }}
 
-  <div id="cardioFields">
-    <label for="distance">Distance</label>
-    {{ form.distance() }}
-  </div>
+<script>
+  const exerciseTypeSelect = document.getElementById("exercise_type");
+  const distance = document.getElementById("distance_container");
+  const reps = document.getElementById("reps_container");
+  const weight = document.getElementById("weight_container");
 
-  <script>
-    // On page load, or whenever the selection changes, show/hide fields.
-    const exerciseTypeSelect = document.getElementById("exercise_type"); // or name="_something"
-  
-    const machineDiv = document.getElementById("machineFields");
-    const cardioDiv = document.getElementById("cardioFields");
-  
-    function updateFields() {
-      const typeValue = exerciseTypeSelect.value;
-      if (typeValue === "machine") {
-        machineDiv.style.display = "block";
-        cardioDiv.style.display = "none";
-      } else if (typeValue === "cardio") {
-        machineDiv.style.display = "none";
-        cardioDiv.style.display = "block";
-      } else {
-        // if there's a default or "Please select"...
-        machineDiv.style.display = "none";
-        cardioDiv.style.display = "none";
-      }
+  function updateFields() {
+      const value = exerciseTypeSelect.value;
+
+      if (value === "machine") {
+        weight.style.display = "block";
+        reps.style.display = "block";
+        distance.style.display = "none";
+      } else if (value === "cardio") {
+        weight.style.display = "none";
+        reps.style.display = "none";
+        distance.style.display = "block";
+      } 
     }
-  
+
     // Run once on page load
     updateFields();
-  
-    // And run any time the user changes the selection
-    exerciseTypeSelect.addEventListener("change", updateFields);
-  </script>
 
-  <p>{{ form.submit() }}</p>
-</form>
+    // Update whenever selection changes
+    exerciseTypeSelect.addEventListener("change", updateFields);
+
+</script>
+
 {% endblock %}
