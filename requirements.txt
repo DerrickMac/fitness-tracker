@@ -1,5 +1,6 @@
 Flask
 Flask-Login
+flask-mail
 Flask-WTF
 Flask-SQLAlchemy
 Werkzeug
@@ -8,3 +9,4 @@ wtforms
 sqlalchemy
 python-dotenv
 flask_migrate
+pyjwt
