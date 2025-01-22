@@ -109,16 +109,13 @@ def edit_profile():
 def create_workout():
     form = WorkoutForm()
     if form.validate_on_submit():
-        # 1. Create a new workout row
         new_workout = Workout(
-            date=form.date.data,        # form.date is a DateField
-            user_id=current_user.id     # Link to current user
+            date=form.date.data,       
+            user_id=current_user.id  
         )
         db.session.add(new_workout)
         db.session.flush()  
-        # flush to get new_workout.id, though you can do it after as well
 
-        # 2. Depending on exercise_type, create a new exercise object
         if form.exercise_type.data == "machine":
             machine_ex = MachineExercise(
                 name=form.name.data,
@@ -127,8 +124,6 @@ def create_workout():
             )
             db.session.add(machine_ex)
             db.session.flush()  
-
-            # Link it
             new_workout.machine_exercises.append(machine_ex)
 
         elif form.exercise_type.data == "cardio":
@@ -138,11 +133,8 @@ def create_workout():
             )
             db.session.add(cardio_ex)
             db.session.flush()
-
-            # Link it
             new_workout.cardio_exercises.append(cardio_ex)
 
-        # 3. Commit all changes (workout + exercise + relationship)
         db.session.commit()
 
         flash("New workout created successfully!")

@@ -12,6 +12,18 @@
       {{ item.label(class='form-check-label') }}
     </div>
     {%- endfor %}
+  {%- elif field.type == 'DateTimeField' %}
+    <div class="mb-3">
+      {{ field.label(class='form-label') }}
+      {% if autofocus %}
+        {{ field(class='form-control', autofocus=True, type='date') }}
+      {% else %}
+        {{ field(class='form-control', type='date') }}
+      {% endif %}
+      {%- for error in field.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {%- endfor %}
+    </div>  
   {%- elif field.type == 'SelectField' %}
     {{ field.label(class='form-label') }}
     {{ field(class='form-select mb-3') }}
