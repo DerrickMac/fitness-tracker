@@ -1,5 +1,5 @@
 from flask_login import current_user, login_user, logout_user, login_required
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, WorkoutForm
 from urllib.parse import urlsplit
@@ -13,6 +13,16 @@ def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
+
+@app.route('/api/workouts', methods=['GET'])
+@login_required
+def get_workout_data():
+    user = db.first_or_404(sa.select(User).where(User.username == current_user.username))
+    user_workouts = []
+    for w in user.workouts:
+        user_workouts.append([w.date, 1])
+
+    return jsonify(user_workouts)
 
 @app.route('/')
 @app.route('/index')

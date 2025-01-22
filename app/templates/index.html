@@ -1,42 +1,77 @@
-{% extends "base.html" %}
-
-{% block content %}
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% extends "base.html" %} {% block content %}
+<script
+  type="text/javascript"
+  src="https://www.gstatic.com/charts/loader.js"
+></script>
 <script>
-    // Load the calendar package
-    google.charts.load("current", { packages: ["calendar"] });
-    google.charts.setOnLoadCallback(drawChart);
+  // Load the calendar package
+  google.charts.load("current", { packages: ["calendar"] });
+  google.charts.setOnLoadCallback(drawChart);
 
-    function drawChart() {
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn({ type: 'date', id: 'Date' });
-        dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
-        dataTable.addRows([
-            [new Date(2013, 9, 4), 38177],
-            [new Date(2013, 9, 5), 38705],
-            [new Date(2013, 9, 12), 38210],
-            [new Date(2013, 9, 13), 38029],
-            [new Date(2013, 9, 19), 38823],
-            [new Date(2013, 9, 23), 38345],
-            [new Date(2013, 9, 24), 38436],
-            [new Date(2013, 9, 30), 38447]
-        ]);
+  async function drawChart() {
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn({ type: "date", id: "Date" });
+    dataTable.addColumn({ type: "number", id: "Activity" });
 
-        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+    const response = await fetch("/api/workouts");
+    const data = await response.json();
+    const processedData = data.map((entry) => {
+      const dateStr = entry[0];
+      const value = entry[1];
+      const rawDate = new Date(dateStr);
+      const stableDate = new Date(
+        rawDate.getFullYear(),
+        rawDate.getMonth(),
+        rawDate.getDate() + 1
+      );
+      return [stableDate, value];
+    });
+    dataTable.addRows(processedData);
 
-        var options = {
-            title: "Cardio Activity",
-            height: 350,
-        };
+    var chart = new google.visualization.Calendar(
+      document.getElementById("calendar_basic")
+    );
 
-        chart.draw(dataTable, options);
-    }
+    var options = {
+      title: "Fitness Activity",
+      colorAxis: {
+        minValue: 0,
+        maxValue: 1,
+        colors: ["#EFF3EA", "#399918"],
+      },
+      noDataPattern: {
+        backgroundColor: "#EFF3EA",
+        color: "#EFF3EA",
+      },
+      calendar: {
+        monthLabel: {
+          fontName: "Arial",
+          fontSize: 12,
+          color: "#1A1A19",
+        },
+        monthOutlineColor: {
+          stroke: "#FFFFFF",
+          strokeOpacity: 0.8,
+          strokeWidth: 2,
+        },
+        unusedMonthOutlineColor: {
+          stroke: "#FFFFFF",
+          strokeOpacity: 1,
+          strokeWidth: 2,
+        },
+        yearLabel: {
+          fontName: "Arial",
+          fontSize: 36,
+          color: "#1A1A19",
+        },
+        underMonthSpace: 12,
+      },
+    };
+    chart.draw(dataTable, options);
+  }
 </script>
-</head>
 
 <body>
-    <div id="calendar_basic" style="width: 1000px; height: 350px;"></div>
+  <div id="calendar_basic" style="width: 1000px; height: 350px"></div>
 </body>
-</script>
-
 {% endblock %}
