@@ -196,3 +196,20 @@ def edit_workout(workout_id):
             form.distance.data = cardio_ex.distance
         
     return render_template('workout.html', title='Edit Workout', form=form, action="Edit")
+
+@app.route('/delete-workout/<workout_id>', methods=['GET'])
+@login_required
+def delete_workout(workout_id):
+    # fetch specific workout
+    workout = Workout.query.get_or_404(workout_id)
+    
+    # verify correct user is deleting workout
+    if workout.user.id != current_user.id:
+        flash("You do not have permission to delete this workout", "ERROR")
+        return redirect(url_for('index'))
+    
+    db.session.delete(workout)
+    db.session.commit()
+
+    flash("Workout deleted successfully!", "success")
+    return redirect(url_for('user', username=current_user.username))
