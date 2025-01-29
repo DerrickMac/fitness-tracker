@@ -32,6 +32,13 @@
       document.getElementById("calendar_basic")
     );
 
+    // Get screen width to adjust size
+    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    
+    // Adjust size based on screen width
+    var chartWidth = screenWidth < 600 ? screenWidth * 0.9 : 800;
+    var chartHeight = screenWidth < 600 ? 250 : 350;
+
     var options = {
       title: "Fitness Activity",
       colorAxis: {
@@ -44,6 +51,7 @@
         color: "#EFF3EA",
       },
       calendar: {
+        cellSize: screenWidth < 600 ? 10 : 16, // Smaller cells for small screens
         monthLabel: {
           fontName: "Arial",
           fontSize: 12,
@@ -65,10 +73,13 @@
           color: "#1A1A19",
         },
         underMonthSpace: 12,
+        underYearSpace: 5,
       },
     };
     chart.draw(dataTable, options);
   }
+  // Redraw chart when window resizes
+  window.addEventListener('resize', drawChart);
 </script>
 
 <body>
