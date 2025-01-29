@@ -141,4 +141,58 @@ def create_workout():
         flash("New workout created successfully!")
         return redirect(url_for('index'))
         
-    return render_template('create_workout.html', title='Create Workout', form=form)
+    return render_template('workout.html', title='Create Workout', form=form, action="Create")
+
+@app.route('/edit-workout/<workout_id>', methods=['GET', 'POST'])
+@login_required
+def edit_workout(workout_id):
+    # fetch specific workout
+    workout = Workout.query.get_or_404(workout_id)
+
+    # verify correct user is editing workout
+    if workout.user.id != current_user.id:
+        flash("You do not have permission to edit this workout", "ERROR")
+        return redirect(url_for('index'))
+    
+    form = WorkoutForm()
+    if form.validate_on_submit():
+        
+        workout.date=form.date.data
+        workout.machine_exercises.clear()
+        workout.cardio_exercises.clear()              
+        if form.exercise_type.data == "machine":
+            machine_ex = MachineExercise(
+                name=form.name.data,
+                weight=form.weight.data or 0,
+                reps=form.reps.data or 0
+            )
+            db.session.add(machine_ex)
+            workout.machine_exercises.append(machine_ex)
+
+        elif form.exercise_type.data == "cardio":
+            cardio_ex = CardioExercise(
+                name=form.name.data,
+                distance=form.distance.data or 0
+            )
+            db.session.add(cardio_ex)
+            workout.cardio_exercises.append(cardio_ex)
+
+        db.session.commit()
+
+        flash("Workout updated successfully!")
+        return redirect(url_for('user', username=current_user.username))
+
+    elif request.method == 'GET':
+        if workout.machine_exercises:
+            machine_ex = workout.machine_exercises[0]
+            form.exercise_type.data = 'machine'
+            form.name.data = machine_ex.name
+            form.weight.data = machine_ex.weight
+            form.reps.data = machine_ex.reps
+        elif workout.cardio_exercises:
+            cardio_ex = workout.cardio_exercises[0]
+            form.exercise_type.data = 'cardio'
+            form.name.data = cardio_ex.name
+            form.distance.data = cardio_ex.distance
+        
+    return render_template('workout.html', title='Edit Workout', form=form, action="Edit")
