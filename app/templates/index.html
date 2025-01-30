@@ -32,12 +32,17 @@
       document.getElementById("calendar_basic")
     );
 
-    // Get screen width to adjust size
     var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    
-    // Adjust size based on screen width
-    var chartWidth = screenWidth < 600 ? screenWidth * 0.9 : 800;
-    var chartHeight = screenWidth < 600 ? 250 : 350;
+    var cellSize = screenWidth < 400 ? 6 :
+                   screenWidth < 600 ? 6.3 :
+                   screenWidth < 800 ? 8.5 :
+                   screenWidth < 1000 ? 12 :
+                   screenWidth < 1200 ? 14 : 16;
+    var yearSize = screenWidth < 400 ? 10 :
+                   screenWidth < 600 ? 14 :
+                   screenWidth < 800 ? 18 :
+                   screenWidth < 1000 ? 20 :
+                   screenWidth < 1200 ? 24 : 28;
 
     var options = {
       title: "Fitness Activity",
@@ -51,10 +56,10 @@
         color: "#EFF3EA",
       },
       calendar: {
-        cellSize: screenWidth < 600 ? 10 : 16, // Smaller cells for small screens
+        cellSize: cellSize, 
         monthLabel: {
           fontName: "Arial",
-          fontSize: 12,
+          fontSize: screenWidth < 600 ? 10 : 12,
           color: "#1A1A19",
         },
         monthOutlineColor: {
@@ -69,11 +74,11 @@
         },
         yearLabel: {
           fontName: "Arial",
-          fontSize: 36,
+          fontSize: yearSize,
           color: "#1A1A19",
         },
-        underMonthSpace: 12,
-        underYearSpace: 5,
+        underMonthSpace: screenWidth < 600 ? 8 : 12,
+        underYearSpace: screenWidth < 600 ? 4 : 5,
       },
     };
     chart.draw(dataTable, options);
@@ -83,6 +88,6 @@
 </script>
 
 <body>
-  <div id="calendar_basic" style="width: 1000px; height: 350px"></div>
+  <div id="calendar_basic" style="width: 100%; max-width: 1000px; margin: auto;"></div>
 </body>
 {% endblock %}

@@ -163,7 +163,7 @@ def edit_workout(workout_id):
         if form.exercise_type.data == "machine":
             machine_ex = Exercise(
                 name=form.name.data,
-                type=form.exercise_type.data,
+                exercise_type=form.exercise_type.data,
                 weight=form.weight.data or 0,
                 reps=form.reps.data or 0
             )
@@ -173,7 +173,7 @@ def edit_workout(workout_id):
         elif form.exercise_type.data == "cardio":
             cardio_ex = Exercise(
                 name=form.name.data,
-                type=form.exercise_type.data,
+                exercise_type=form.exercise_type.data,
                 distance=form.distance.data or 0
             )
             db.session.add(cardio_ex)
