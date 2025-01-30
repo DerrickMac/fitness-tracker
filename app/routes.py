@@ -214,3 +214,17 @@ def delete_workout(workout_id):
 
     flash("Workout deleted successfully!", "success")
     return redirect(url_for('user', username=current_user.username))
+
+@app.route('/history')
+@login_required
+def history():
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    query = current_user.workouts.order_by(Workout.date.desc())
+    workouts = db.paginate(query, page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
+    next_url = url_for('history', page=workouts.next_num) \
+        if workouts.has_next else None
+    prev_url = url_for('history', page=workouts.prev_num) \
+        if workouts.has_prev else None
+    return render_template('history.html', workouts=workouts.items, next_url=next_url, prev_url=prev_url)
