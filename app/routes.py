@@ -5,7 +5,7 @@ from app.forms import LoginForm, RegistrationForm, EditProfileForm, WorkoutForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
-from app.models import User, Workout, MachineExercise, CardioExercise
+from app.models import User, Workout, Exercise
 from datetime import datetime, timezone
 
 @app.before_request
@@ -79,7 +79,6 @@ def register():
 def user(username):
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
-     
     page = request.args.get('page', 1, type=int)
     user = db.first_or_404(sa.select(User).where(User.username == username))
     query = user.workouts.order_by(Workout.date.desc())
@@ -118,23 +117,25 @@ def create_workout():
         db.session.flush()  
 
         if form.exercise_type.data == "machine":
-            machine_ex = MachineExercise(
+            machine_ex = Exercise(
                 name=form.name.data,
+                exercise_type=form.exercise_type.data,
                 weight=form.weight.data or 0,
                 reps=form.reps.data or 0
             )
             db.session.add(machine_ex)
             db.session.flush()  
-            new_workout.machine_exercises.append(machine_ex)
+            new_workout.exercises.append(machine_ex)
 
         elif form.exercise_type.data == "cardio":
-            cardio_ex = CardioExercise(
+            cardio_ex = Exercise(
                 name=form.name.data,
+                exercise_type=form.exercise_type.data,
                 distance=form.distance.data or 0
             )
             db.session.add(cardio_ex)
             db.session.flush()
-            new_workout.cardio_exercises.append(cardio_ex)
+            new_workout.exercises.append(cardio_ex)
 
         db.session.commit()
 
@@ -158,24 +159,24 @@ def edit_workout(workout_id):
     if form.validate_on_submit():
         
         workout.date=form.date.data
-        workout.machine_exercises.clear()
-        workout.cardio_exercises.clear()              
+        workout.exercises.clear()           
         if form.exercise_type.data == "machine":
-            machine_ex = MachineExercise(
+            machine_ex = Exercise(
                 name=form.name.data,
+                type=form.exercise_type.data,
                 weight=form.weight.data or 0,
                 reps=form.reps.data or 0
             )
             db.session.add(machine_ex)
-            workout.machine_exercises.append(machine_ex)
+            workout.exercises.append(machine_ex)
 
         elif form.exercise_type.data == "cardio":
-            cardio_ex = CardioExercise(
+            cardio_ex = Exercise(
                 name=form.name.data,
+                type=form.exercise_type.data,
                 distance=form.distance.data or 0
             )
             db.session.add(cardio_ex)
-            workout.cardio_exercises.append(cardio_ex)
 
         db.session.commit()
 
@@ -183,18 +184,18 @@ def edit_workout(workout_id):
         return redirect(url_for('user', username=current_user.username))
 
     elif request.method == 'GET':
-        if workout.machine_exercises:
-            machine_ex = workout.machine_exercises[0]
+        if workout.exercises and workout.exercises[0].exercise_type == "machine":
+            machine_ex = workout.exercises[0]
             form.exercise_type.data = 'machine'
             form.name.data = machine_ex.name
             form.weight.data = machine_ex.weight
             form.reps.data = machine_ex.reps
-        elif workout.cardio_exercises:
-            cardio_ex = workout.cardio_exercises[0]
+        elif workout.exercises and workout.exercises[0].exercise_type == "cardio":
+            cardio_ex = workout.exercises[0]
             form.exercise_type.data = 'cardio'
             form.name.data = cardio_ex.name
             form.distance.data = cardio_ex.distance
-        
+
     return render_template('workout.html', title='Edit Workout', form=form, action="Edit")
 
 @app.route('/delete-workout/<workout_id>', methods=['GET'])

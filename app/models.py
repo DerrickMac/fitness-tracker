@@ -11,14 +11,9 @@ from app import db, login
 def load_user(id):
     return db.session.get(User, int(id))
 
-workout_machine_exercise = Table('workout_machine_exercise', db.metadata, 
+workout_machine_exercise = Table('workout_exercise', db.metadata, 
                                  Column('workout_id', Integer, ForeignKey('workout.id'), primary_key=True),
-                                 Column('machine_exercise_id', Integer, ForeignKey('machine_exercise.id'), primary_key=True)
-                                )
-
-workout_cardio_exercise = Table('workout_cardio_exercise', db.metadata, 
-                                 Column('workout_id', Integer, ForeignKey('workout.id'), primary_key=True),
-                                 Column('cardio_exercise_id', Integer, ForeignKey('cardio_exercise.id'), primary_key=True)
+                                 Column('exercise_id', Integer, ForeignKey('exercise.id'), primary_key=True)
                                 )
 
 class User(UserMixin, db.Model):
@@ -53,24 +48,16 @@ class Workout(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), index=True)
     user: Mapped[User] = relationship(back_populates='workouts')
 
-    machine_exercises: Mapped[List["MachineExercise"]] = relationship(secondary='workout_machine_exercise', back_populates="workouts")
-    cardio_exercises: Mapped[List["CardioExercise"]] = relationship(secondary='workout_cardio_exercise', back_populates="workouts")
+    exercises: Mapped[List["Exercise"]] = relationship(secondary='workout_exercise', back_populates="workouts")
 
-class MachineExercise(db.Model):
+class Exercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(64), index=True)
-    reps: Mapped[int] = mapped_column(Integer, default=1)
-    weight: Mapped[int] = mapped_column(Integer, default=0)
-    workouts: Mapped[List['Workout']] = relationship(secondary='workout_machine_exercise', back_populates='machine_exercises')
+    exercise_type: Mapped[str] = mapped_column(String(64))
+    reps: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
+    weight: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
+    distance: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
+    workouts: Mapped[List['Workout']] = relationship(secondary='workout_exercise', back_populates='exercises')
 
     def __repr__(self):
-        return '<Machine {}>'.format(self.name)
-    
-class CardioExercise(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True)
-    distance: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    workouts: Mapped[List['Workout']] = relationship(secondary='workout_cardio_exercise', back_populates='cardio_exercises')
-
-    def __repr__(self):
-        return '<Cardio {}>'.format(self.name)
+        return '<Exercise {}>'.format(self.name)

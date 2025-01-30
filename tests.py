@@ -3,7 +3,7 @@ os.environ['DATABASE_URL'] = 'sqlite://'
 
 import unittest
 from app import app, db
-from app.models import User, Workout, MachineExercise, CardioExercise
+from app.models import User, Workout, Exercise
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
@@ -45,20 +45,21 @@ class WorkoutModelCast(unittest.TestCase):
         db.session.add(w)
         db.session.commit()
 
-        bench = MachineExercise(name="Bench Press", reps=1, weight=10)
-        walk = CardioExercise(name="Walk", distance=1)
-        w.machine_exercises.append(bench)
-        w.cardio_exercises.append(walk)
+        bench = Exercise(name="Bench Press", reps=1, exercise_type="machine", weight=10)
+        walk = Exercise(name="Walk", exercise_type="cardio", distance=1)
+        w.exercises.append(bench)
+        w.exercises.append(walk)
         db.session.commit()
 
-        self.assertEqual(len(w.machine_exercises), 1)
-        self.assertEqual(w.machine_exercises[0].name, "Bench Press")
-        self.assertEqual(w.machine_exercises[0].reps, 1)
-        self.assertEqual(w.machine_exercises[0].weight, 10)
+        self.assertEqual(len(w.exercises), 2)
+        self.assertEqual(w.exercises[0].name, "Bench Press")
+        self.assertEqual(w.exercises[0].exercise_type, "machine")
+        self.assertEqual(w.exercises[0].reps, 1)
+        self.assertEqual(w.exercises[0].weight, 10)
 
-        self.assertEqual(len(w.cardio_exercises), 1)
-        self.assertEqual(w.cardio_exercises[0].name, "Walk")
-        self.assertEqual(w.cardio_exercises[0].distance, 1)
+        self.assertEqual(w.exercises[1].name, "Walk")
+        self.assertEqual(w.exercises[1].exercise_type, "cardio")
+        self.assertEqual(w.exercises[1].distance, 1)
         
 
 if __name__ == '__main__':
