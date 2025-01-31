@@ -107,31 +107,17 @@ def create_workout():
         )
         db.session.add(new_workout)
         db.session.flush()  
-
-        if form.exercise_type.data == "machine":
-            machine_ex = Exercise(
-                name=form.name.data,
-                exercise_type=form.exercise_type.data,
-                weight=form.weight.data or 0,
-                reps=form.reps.data or 0
+        
+        exercise = Exercise(
+            name=form.name.data,
+            exercise_type=form.exercise_type.data,
+            weight=form.weight.data if form.exercise_type.data == "machine" else None,
+            reps=form.reps.data if form.exercise_type.data == "machine" else None,
+            distance=form.distance.data if form.exercise_type.data == "cardio" else None
             )
-            db.session.add(machine_ex)
-            db.session.flush()  
-            new_workout.exercises.append(machine_ex)
-
-        elif form.exercise_type.data == "cardio":
-            cardio_ex = Exercise(
-                name=form.name.data,
-                exercise_type=form.exercise_type.data,
-                distance=form.distance.data or 0
-            )
-            db.session.add(cardio_ex)
-            db.session.flush()
-            new_workout.exercises.append(cardio_ex)
-
+        new_workout.exercises.append(exercise)
         db.session.commit()
-
-        flash("New workout created successfully!")
+        flash("Workout updated successfully!")
         return redirect(url_for('index'))
         
     return render_template('workout.html', title='Create Workout', form=form, action="Create")
@@ -152,42 +138,26 @@ def edit_workout(workout_id):
         
         workout.date=form.date.data
         workout.exercises.clear()           
-        if form.exercise_type.data == "machine":
-            machine_ex = Exercise(
-                name=form.name.data,
-                exercise_type=form.exercise_type.data,
-                weight=form.weight.data or 0,
-                reps=form.reps.data or 0
-            )
-            db.session.add(machine_ex)
-            workout.exercises.append(machine_ex)
-
-        elif form.exercise_type.data == "cardio":
-            cardio_ex = Exercise(
-                name=form.name.data,
-                exercise_type=form.exercise_type.data,
-                distance=form.distance.data or 0
-            )
-            db.session.add(cardio_ex)
-
+        exercise = Exercise(
+            name=form.name.data,
+            exercise_type=form.exercise_type.data,
+            weight=form.weight.data if form.exercise_type.data == "machine" else None,
+            reps=form.reps.data if form.exercise_type.data == "machine" else None,
+            distance=form.distance.data if form.exercise_type.data == "cardio" else None
+        )
+        workout.exercises.append(exercise)
         db.session.commit()
-
         flash("Workout updated successfully!")
         return redirect(url_for('history'))
 
     elif request.method == 'GET':
-        if workout.exercises and workout.exercises[0].exercise_type == "machine":
-            machine_ex = workout.exercises[0]
-            form.exercise_type.data = 'machine'
-            form.name.data = machine_ex.name
-            form.weight.data = machine_ex.weight
-            form.reps.data = machine_ex.reps
-        elif workout.exercises and workout.exercises[0].exercise_type == "cardio":
-            cardio_ex = workout.exercises[0]
-            form.exercise_type.data = 'cardio'
-            form.name.data = cardio_ex.name
-            form.distance.data = cardio_ex.distance
-
+        if workout.exercises:
+            exercise = workout.exercises[0]
+            form.name.data = exercise.name
+            form.exercise_type.data = exercise.exercise_type
+            form.weight.data = exercise.weight
+            form.reps.data = exercise.reps
+            form.distance.data = exercise.distance
     return render_template('workout.html', title='Edit Workout', form=form, action="Edit")
 
 @app.route('/delete-workout/<workout_id>', methods=['GET'])
