@@ -44,7 +44,7 @@ class User(UserMixin, db.Model):
 
 class Workout(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[datetime] = mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    name: Mapped[str] = mapped_column(String(64), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), index=True)
     user: Mapped[User] = relationship(back_populates='workouts')
 
@@ -52,8 +52,8 @@ class Workout(db.Model):
 
 class Exercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True)
     exercise_type: Mapped[str] = mapped_column(String(64))
+    date: Mapped[datetime] = mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     reps: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     weight: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     distance: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
