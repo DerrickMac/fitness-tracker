@@ -14,6 +14,13 @@ def before_request():
         current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
 
+@app.route('/api/deleterows', methods=['GET'])
+def delete_all_rows():
+    db.session.query(Workout).delete()
+    db.session.query(Exercise).delete()
+    db.session.commit()
+    return "deleted", 200
+
 @app.route('/api/workouts', methods=['GET'])
 @login_required
 def get_workout_data():
