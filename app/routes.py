@@ -1,12 +1,13 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, WorkoutForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, WorkoutForm, ExerciseForm
 from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
 from app.models import User, Workout, Exercise
 from datetime import datetime, timezone
+
 
 @app.before_request
 def before_request():
@@ -24,12 +25,18 @@ def delete_all_rows():
 @app.route('/api/workouts', methods=['GET'])
 @login_required
 def get_workout_data():
-    user = db.first_or_404(sa.select(User).where(User.username == current_user.username))
-    user_workouts = []
-    for w in user.workouts:
-        user_workouts.append([w.date, 1])
-
-    return jsonify(user_workouts)
+    unique_dates = (
+        db.session.query(sa.func.date(Exercise.date))
+        .join(Exercise.workouts)  # join through the relationship
+        .filter(Workout.user_id == current_user.id)
+        .distinct()
+        .all()
+    )
+    # unique_dates is a list of one-element tuples containing date objects, e.g., [(date1,), (date2,), ...]
+    # Convert each date to an ISO formatted string and pair it with the value 1.
+    date_value_pairs = [[d, 1] for (d,) in unique_dates if d is not None]
+    
+    return jsonify(date_value_pairs)
 
 @app.route('/')
 @app.route('/index')
@@ -103,73 +110,104 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
-@app.route('/workout', methods=['GET', 'POST'])
+@app.route('/workouts', methods=['GET'])
+@login_required
+def all_workouts():
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    workouts = current_user.workouts.order_by(Workout.name.asc())
+    return render_template('workouts.html', title='Workouts', workouts=workouts)
+
+@app.route('/create-workout', methods=['GET', 'POST'])
 @login_required
 def create_workout():
     form = WorkoutForm()
     if form.validate_on_submit():
         new_workout = Workout(
-            date=form.date.data,       
+            name=form.name.data, 
+            exercise_type=form.exercise_type.data,       
             user_id=current_user.id  
         )
         db.session.add(new_workout)
-        db.session.flush()  
-        
-        exercise = Exercise(
-            name=form.name.data,
-            exercise_type=form.exercise_type.data,
-            weight=form.weight.data if form.exercise_type.data == "machine" else None,
-            reps=form.reps.data if form.exercise_type.data == "machine" else None,
-            distance=form.distance.data if form.exercise_type.data == "cardio" else None
-            )
-        new_workout.exercises.append(exercise)
         db.session.commit()
-        flash("Workout updated successfully!")
-        return redirect(url_for('index'))
-        
-    return render_template('workout.html', title='Create Workout', form=form, action="Create")
 
-@app.route('/edit-workout/<workout_id>', methods=['GET', 'POST'])
+        flash("Workout created successfully!")
+        return redirect(url_for('all_workouts'))
+    return render_template('create_workout.html', title='Create Workout', form=form)
+
+## TODO EDIT WORKOUT
+## TODO DELETE WORKOUT
+
+@app.route('/log-exercise/<int:workout_id>', methods=['GET', 'POST'])
 @login_required
-def edit_workout(workout_id):
-    # fetch specific workout
-    workout = Workout.query.get_or_404(workout_id)
+def log_exercise(workout_id):
+    user_workout = Workout.query.get_or_404(workout_id)
 
     # verify correct user is editing workout
-    if workout.user.id != current_user.id:
+    if user_workout.user.id != current_user.id:
+        flash("You do not have permission to create this workout", "ERROR")
+        return redirect(url_for('index'))
+    
+    form = ExerciseForm()
+    if form.validate_on_submit():
+        exercise = Exercise(
+                    date=form.date.data,
+                    weight=form.weight.data if user_workout.exercise_type == "machine" else None,
+                    reps=form.reps.data if user_workout.exercise_type == "machine" else None,
+                    distance=form.distance.data if user_workout.exercise_type == "cardio" else None
+                    )
+        user_workout.exercises.append(exercise)
+        db.session.commit()
+        return redirect(url_for('log_exercise', workout_id=workout_id))
+    
+    page = request.args.get('page', 1, type=int)
+    exercises_paginated  = (
+        Exercise.query
+        .join(Workout.exercises)
+        .filter(Workout.id == workout_id)
+        .order_by(Exercise.date.desc())
+        .paginate(page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
+    )
+    next_url = url_for('log_exercise', workout_id=workout_id, page=exercises_paginated.next_num) \
+        if exercises_paginated.has_next else None
+    prev_url = url_for('log_exercise', workout_id=workout_id, page=exercises_paginated.prev_num) \
+        if exercises_paginated.has_prev else None
+    return render_template('log_exercise.html', title='Log Exercise', workout_id=workout_id, workout_name=user_workout.name, exercise_type=user_workout.exercise_type, form=form, exercises=exercises_paginated.items, next_url=next_url, prev_url=prev_url)
+
+@app.route('/edit-exercise/<int:workout_id>/<int:exercise_id>', methods=['GET', 'POST'])
+@login_required
+def edit_exercise(workout_id, exercise_id):
+    # fetch specific workout
+    user_workout = Workout.query.get_or_404(workout_id)
+
+    # verify correct user is editing workout
+    if user_workout.user.id != current_user.id:
         flash("You do not have permission to edit this workout", "ERROR")
         return redirect(url_for('index'))
     
-    form = WorkoutForm()
+    exercise = Exercise.query.filter_by(id=exercise_id).first_or_404()
+    print(exercise)
+
+    form = ExerciseForm()
     if form.validate_on_submit():
-        
-        workout.date=form.date.data
-        workout.exercises.clear()           
-        exercise = Exercise(
-            name=form.name.data,
-            exercise_type=form.exercise_type.data,
-            weight=form.weight.data if form.exercise_type.data == "machine" else None,
-            reps=form.reps.data if form.exercise_type.data == "machine" else None,
-            distance=form.distance.data if form.exercise_type.data == "cardio" else None
-        )
-        workout.exercises.append(exercise)
+        exercise.date=form.date.data
+        exercise.weight=form.weight.data if user_workout.exercise_type == "machine" else None
+        exercise.reps=form.reps.data if user_workout.exercise_type == "machine" else None
+        exercise.distance=form.distance.data if user_workout.exercise_type == "cardio" else None
         db.session.commit()
-        flash("Workout updated successfully!")
-        return redirect(url_for('history'))
+        flash("Exercise updated successfully!")
+        return redirect(url_for('log_exercise', workout_id=workout_id))
 
     elif request.method == 'GET':
-        if workout.exercises:
-            exercise = workout.exercises[0]
-            form.name.data = exercise.name
-            form.exercise_type.data = exercise.exercise_type
-            form.weight.data = exercise.weight
-            form.reps.data = exercise.reps
-            form.distance.data = exercise.distance
-    return render_template('workout.html', title='Edit Workout', form=form, action="Edit")
+        form.date.data = exercise.date
+        form.weight.data = exercise.weight if user_workout.exercise_type == "machine" else None
+        form.reps.data = exercise.reps if user_workout.exercise_type == "machine" else None
+        form.distance.data = exercise.distance if user_workout.exercise_type == "cardio" else None
+    return render_template('log_exercise.html', form=form, workout_id=workout_id, workout_name=user_workout.name, exercise_id=exercise_id, exercise_type=user_workout.exercise_type, action="edit")
 
-@app.route('/delete-workout/<workout_id>', methods=['GET'])
+@app.route('/delete-exercise/<int:workout_id>/<int:exercise_id>', methods=['GET'])
 @login_required
-def delete_workout(workout_id):
+def delete_exercise(workout_id, exercise_id):
     # fetch specific workout
     workout = Workout.query.get_or_404(workout_id)
     
@@ -178,22 +216,10 @@ def delete_workout(workout_id):
         flash("You do not have permission to delete this workout", "ERROR")
         return redirect(url_for('index'))
     
-    db.session.delete(workout)
+    exercise = Exercise.query.filter_by(id=exercise_id).first_or_404()
+
+    db.session.delete(exercise)
     db.session.commit()
 
-    flash("Workout deleted successfully!", "success")
-    return redirect(url_for('history'))
-
-@app.route('/history')
-@login_required
-def history():
-    if not current_user.is_authenticated:
-        return redirect(url_for('index'))
-    page = request.args.get('page', 1, type=int)
-    query = current_user.workouts.order_by(Workout.date.desc())
-    workouts = db.paginate(query, page=page, per_page=app.config['WORKOUTS_PER_PAGE'], error_out=False)
-    next_url = url_for('history', page=workouts.next_num) \
-        if workouts.has_next else None
-    prev_url = url_for('history', page=workouts.prev_num) \
-        if workouts.has_prev else None
-    return render_template('history.html', workouts=workouts.items, next_url=next_url, prev_url=prev_url)
+    flash("Exercise deleted successfully!", "success")
+    return redirect(url_for('log_exercise', workout_id=workout_id))

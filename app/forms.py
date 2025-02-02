@@ -53,9 +53,12 @@ class EditProfileForm(FlaskForm):
                 raise ValidationError('Please use a different username')
 
 class WorkoutForm(FlaskForm):
-    date = DateTimeField('Date', format='%Y-%m-%d', default=datetime.now(), validators=[DataRequired()])
-    exercise_type = SelectField('Exercise Type', choices=[('machine', 'Machine'), ('cardio', 'Cardio')], validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired()])
+    exercise_type = SelectField('Exercise Type', choices=[('machine', 'Machine'), ('cardio', 'Cardio')], validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class ExerciseForm(FlaskForm):
+    date = DateTimeField('Date', format='%Y-%m-%d', default=datetime.now(), validators=[DataRequired()])
     weight = IntegerField('Weight (lbs)', validators=[Optional()])
     reps = IntegerField('Reps', validators=[Optional()])
     distance = IntegerField('Distance (miles)', validators=[Optional()])

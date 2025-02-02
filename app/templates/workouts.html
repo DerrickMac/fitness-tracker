@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">🏋️‍♂️ My Workouts</h1>
+
+    <div class="d-flex justify-content-center mb-4">
+        <a href="/create-workout" class="btn btn-success btn-lg shadow-sm">
+            ➕ Create New Workout
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for workout in workouts %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow border-0 h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold text-primary">{{ workout.name }}</h5>
+                        <form action="{{ url_for('log_exercise', workout_id=workout.id )}}" method="POST">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                📝 Log Exercise
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

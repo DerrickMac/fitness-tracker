@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+{% if action != "edit" %}
+    <h1>{{ workout_name }}</h1>
+{% else %}
+    <h1>Editing {{ workout_name }}</h1>
+{% endif %}
+
+{{ wtf.quick_form(form) }}
+
+{# Only include history and pagination if we're NOT in edit mode #}
+  {% if action != 'edit' %}
+    {% include '_history.html' %}
+    <nav aria-label="Post navigation">
+      <ul class="pagination">
+        <li class="page-item{% if not prev_url %} disabled{% endif %}">
+          <a class="page-link" href="{{ prev_url }}">
+            <span aria-hidden="true">&larr;</span>Newer
+          </a>
+        </li>
+        <li class="page-item{% if not next_url %} disabled{% endif %}">
+          <a class="page-link" href="{{ next_url }}">
+            Older <span aria-hidden="true">&larr;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
+
+<script>
+  const exerciseTypeSelect = "{{ exercise_type }}";
+  const distance = document.getElementById("distance_container");
+  const reps = document.getElementById("reps_container");
+  const weight = document.getElementById("weight_container");
+
+  function updateFields() {
+      const value = exerciseTypeSelect;
+
+      if (value === "machine") {
+        weight.style.display = "block";
+        reps.style.display = "block";
+        distance.style.display = "none";
+      } else if (value === "cardio") {
+        weight.style.display = "none";
+        reps.style.display = "none";
+        distance.style.display = "block";
+      } 
+    }
+
+    // Run once on page load
+    updateFields();
+
+</script>
+
+{% endblock %}
