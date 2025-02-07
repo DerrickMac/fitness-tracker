@@ -133,19 +133,47 @@ def create_workout():
 
         flash("Workout created successfully!")
         return redirect(url_for('all_workouts'))
-    return render_template('create_workout.html', title='Create Workout', form=form)
+    return render_template('workout_form.html', title='Create Workout', form=form, action="Create")
 
-## TODO EDIT WORKOUT
-## TODO DELETE WORKOUT
+@app.route('/workouts/<int:workout_id>', methods=['GET', 'POST'])
+@login_required
+def edit_workout(workout_id):
+    user_workout = Workout.query.get_or_404(workout_id)
+    form = WorkoutForm()
+    if form.validate_on_submit():
+        user_workout.name=form.name.data, 
+        user_workout.exercise_type=form.exercise_type.data,       
+        db.session.commit()
+        flash("Workout edited successfully!")
+        return redirect(url_for('all_workouts'))
+    elif request.method == "GET":
+        form.name.data = user_workout.name
+        form.exercise_type.data = user_workout.exercise_type
+
+    return render_template('workout_form.html', title='Create Workout', form=form, action="Edit")
+
+@app.route('/workouts/<int:workout_id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_workout(workout_id):
+    user_workout = Workout.query.get_or_404(workout_id)
+    
+    # verify correct user is deleting workout
+    if user_workout.user.id != current_user.id:
+        flash("You do not have permission to delete this workout", "ERROR")
+        return redirect(url_for('index'))
+    
+    db.session.delete(user_workout)
+    db.session.commit()
+    return redirect(url_for('all_workouts'))
 
 @app.route('/log-exercise/<int:workout_id>', methods=['GET', 'POST'])
 @login_required
 def log_exercise(workout_id):
     user_workout = Workout.query.get_or_404(workout_id)
 
-    # verify correct user is editing workout
+    # verify correct user is editing exercise
     if user_workout.user.id != current_user.id:
-        flash("You do not have permission to create this workout", "ERROR")
+        flash("You do not have permission to create this exercise", "ERROR")
         return redirect(url_for('index'))
     
     form = ExerciseForm()
@@ -211,9 +239,9 @@ def delete_exercise(workout_id, exercise_id):
     # fetch specific workout
     workout = Workout.query.get_or_404(workout_id)
     
-    # verify correct user is deleting workout
+    # verify correct user is deleting exercise
     if workout.user.id != current_user.id:
-        flash("You do not have permission to delete this workout", "ERROR")
+        flash("You do not have permission to delete this exercise", "ERROR")
         return redirect(url_for('index'))
     
     exercise = Exercise.query.filter_by(id=exercise_id).first_or_404()

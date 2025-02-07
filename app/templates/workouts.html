@@ -13,18 +13,47 @@
 
     <div class="row g-4">
         {% for workout in workouts %}
-            <div class="col-md-6 col-lg-4">
-                <div class="card shadow border-0 h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold text-primary">{{ workout.name }}</h5>
-                        <form action="{{ url_for('log_exercise', workout_id=workout.id )}}" method="POST">
-                            <button type="submit" class="btn btn-outline-primary btn-sm">
-                                📝 Log Exercise
-                            </button>
-                        </form>
+        <div class="col-md-6 col-lg-4">      
+            <div class="card shadow border-0 h-100 position-relative">
+                
+                <!-- Card Header -->
+                <div class="card-header bg-white border-0 text-center position-relative">
+                    <!-- Use relative positioning to nudge the title down -->
+                    <h5 class="card-title fw-bold text-primary m-0" style="position: relative; top: 5px;">
+                        {{ workout.name }}
+                    </h5>
+                </div>
+        
+                <!-- Ellipsis Menu (Positioned in the top-right corner) -->
+                <div class="position-absolute top-0 end-0 m-2">
+                    <div class="dropdown">
+                        <button class="btn btn-sm" type="button" id="dropdownMenu{{ workout.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            &#x22EE; <!-- Vertical Ellipsis -->
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu{{ workout.id }}">
+                            <li><a class="dropdown-item" href="{{ url_for('edit_workout', workout_id=workout.id) }}">Edit</a></li>
+                            <li>
+                                <form method="POST" action="{{ url_for('delete_workout', workout_id=workout.id) }}" onsubmit="return confirm('Are you sure you want to delete this workout?');">
+                                    <button type="submit" class="dropdown-item text-danger">Delete</button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+        
+                <!-- Card Body -->
+                <div class="card-body text-center">
+                    <form action="{{ url_for('log_exercise', workout_id=workout.id) }}" method="POST">
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            📝 Log Exercise
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
+        
+        
+        
         {% endfor %}
     </div>
 </div>
