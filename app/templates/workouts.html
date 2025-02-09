@@ -2,6 +2,14 @@
 {% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
+
+{% set exercise_icons = {
+    'machine': 'fa-solid fa-weight-hanging',
+    'free_weight': 'fas fa-dumbbell',
+    'bodyweight': 'fa-solid fa-child-reaching',
+    'cardio': 'fas fa-person-running'
+} %}
+
 <div class="container mt-4">
     <h1 class="text-center mb-4">🏋️‍♂️ My Workouts</h1>
 
@@ -11,6 +19,27 @@
         </a>
     </div>
 
+    <div class="mb-3 p-2 bg-light rounded">
+        <form method="get" action="{{ url_for('workouts') }}" class="d-inline-block">
+            <label for="order_by" class="me-2">Sort By:</label>
+            <select name="order_by" id="order_by" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                <option value="default" {% if order_by == "default" %}selected{% endif %}>Default</option>
+                <option value="exercise_type" {% if order_by == "exercise_type" %}selected{% endif %}>Exercise Type</option>
+                <option value="name" {% if order_by == "name" %}selected{% endif %}>Name</option>
+            </select>
+        </form>
+    
+        <!-- Icon Legend -->
+        <div class="mt-2">
+            <strong>Key:</strong>
+            {% for key, icon_class in exercise_icons.items() %}
+                <span class="me-3">
+                    <i class="{{ icon_class }}"></i> {{ key.replace('_', ' ').title() }}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+    
     <div class="row g-4">
         {% for workout in workouts %}
         <div class="col-md-6 col-lg-4">      
@@ -20,6 +49,9 @@
                 <div class="card-header bg-white border-0 text-center position-relative">
                     <!-- Use relative positioning to nudge the title down -->
                     <h5 class="card-title fw-bold text-primary m-0" style="position: relative; top: 5px;">
+                        {% if workout.exercise_type in exercise_icons %}
+                            <i class="{{ exercise_icons[workout.exercise_type] }} me-2"></i>
+                        {% endif %}
                         {{ workout.name }}
                     </h5>
                 </div>

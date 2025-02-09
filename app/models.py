@@ -46,6 +46,7 @@ class Workout(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(64), index=True)
     exercise_type: Mapped[str] = mapped_column(String(64))
+    muscle_group: Mapped[str] = mapped_column(String(64))
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), index=True)
     user: Mapped[User] = relationship(back_populates='workouts')
     exercises: Mapped[List["Exercise"]] = relationship(secondary='workout_exercise', back_populates="workouts")

@@ -112,11 +112,22 @@ def edit_profile():
 
 @app.route('/workouts', methods=['GET'])
 @login_required
-def all_workouts():
+def workouts():
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
-    workouts = current_user.workouts.order_by(Workout.name.asc())
-    return render_template('workouts.html', title='Workouts', workouts=workouts)
+    
+    # Get sorting criteria from the request (default to 'muscle_group')
+    order_by = request.args.get('order_by', 'default')
+
+    # Define sorting logic
+    if order_by == 'exercise_type':
+        workouts = current_user.workouts.order_by(Workout.exercise_type.asc(), Workout.name.asc())
+    elif order_by == 'name':
+        workouts = current_user.workouts.order_by(Workout.name.asc())
+    else:  # Default: Order by muscle_group
+        workouts = current_user.workouts.order_by(Workout.muscle_group.asc(), Workout.name.asc())
+
+    return render_template('workouts.html', title='Workouts', workouts=workouts, order_by=order_by)
 
 @app.route('/create-workout', methods=['GET', 'POST'])
 @login_required
@@ -126,13 +137,14 @@ def create_workout():
         new_workout = Workout(
             name=form.name.data, 
             exercise_type=form.exercise_type.data,       
+            muscle_group=form.muscle_group.data,
             user_id=current_user.id  
         )
         db.session.add(new_workout)
         db.session.commit()
 
         flash("Workout created successfully!")
-        return redirect(url_for('all_workouts'))
+        return redirect(url_for('workouts'))
     return render_template('workout_form.html', title='Create Workout', form=form, action="Create")
 
 @app.route('/workouts/<int:workout_id>', methods=['GET', 'POST'])
@@ -143,12 +155,14 @@ def edit_workout(workout_id):
     if form.validate_on_submit():
         user_workout.name=form.name.data, 
         user_workout.exercise_type=form.exercise_type.data,       
+        user_workout.muscle_group=form.muscle_group.data,
         db.session.commit()
         flash("Workout edited successfully!")
-        return redirect(url_for('all_workouts'))
+        return redirect(url_for('workouts'))
     elif request.method == "GET":
         form.name.data = user_workout.name
         form.exercise_type.data = user_workout.exercise_type
+        form.muscle_group.data = user_workout.muscle_group
 
     return render_template('workout_form.html', title='Create Workout', form=form, action="Edit")
 
@@ -164,7 +178,7 @@ def delete_workout(workout_id):
     
     db.session.delete(user_workout)
     db.session.commit()
-    return redirect(url_for('all_workouts'))
+    return redirect(url_for('workouts'))
 
 @app.route('/log-exercise/<int:workout_id>', methods=['GET', 'POST'])
 @login_required
@@ -220,18 +234,18 @@ def edit_exercise(workout_id, exercise_id):
     form = ExerciseForm()
     if form.validate_on_submit():
         exercise.date=form.date.data
-        exercise.weight=form.weight.data if user_workout.exercise_type == "machine" else None
-        exercise.reps=form.reps.data if user_workout.exercise_type == "machine" else None
-        exercise.distance=form.distance.data if user_workout.exercise_type == "cardio" else None
+        exercise.weight=form.weight.data
+        exercise.reps=form.reps.data
+        exercise.distance=form.distance.data
         db.session.commit()
         flash("Exercise updated successfully!")
         return redirect(url_for('log_exercise', workout_id=workout_id))
 
     elif request.method == 'GET':
         form.date.data = exercise.date
-        form.weight.data = exercise.weight if user_workout.exercise_type == "machine" else None
-        form.reps.data = exercise.reps if user_workout.exercise_type == "machine" else None
-        form.distance.data = exercise.distance if user_workout.exercise_type == "cardio" else None
+        form.weight.data = exercise.weight
+        form.reps.data = exercise.reps
+        form.distance.data = exercise.distance
     return render_template('log_exercise.html', form=form, workout_id=workout_id, workout_name=user_workout.name, exercise_id=exercise_id, exercise_type=user_workout.exercise_type, action="edit")
 
 @app.route('/delete-exercise/<int:workout_id>/<int:exercise_id>', methods=['GET'])

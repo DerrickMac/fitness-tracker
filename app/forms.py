@@ -54,7 +54,8 @@ class EditProfileForm(FlaskForm):
 
 class WorkoutForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    exercise_type = SelectField('Exercise Type', choices=[('machine', 'Machine'), ('freeweight', 'Freeweight'), ('bodyweight', 'Bodyweight'), ('cardio', 'Cardio')], validators=[DataRequired()])
+    exercise_type = SelectField('Exercise Type', choices=[('machine', 'Machine'), ('free_weight', 'Freeweight'), ('bodyweight', 'Bodyweight'), ('cardio', 'Cardio')], validators=[DataRequired()])
+    muscle_group = SelectField('Muscle Group', choices=[('abs', 'Abs'), ('back', 'Back'), ('biceps', 'Biceps'), ('calves', 'Calves'), ('chest', 'Chest'), ('chest_lower', 'Chest (Lower)'), ('chest_upper', 'Chest (Upper)'), ('forearms', 'Forearms'), ('glutes', 'Glutes'), ('hamstrings', 'Hamstrings'),  ('heart', 'Heart'), ('hip_flexors', 'Hip Flexors'), ('inner_thighs', 'Inner thighs'), ('lats', 'Lats'), ('lower_back', 'Lower Back'), ('quadriceps', 'Quadriceps'), ('shoulders', 'Shoulders'), ('triceps', 'Triceps'),], validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 class ExerciseForm(FlaskForm):
