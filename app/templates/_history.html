@@ -1,39 +1,48 @@
 <div class="table-responsive">
-  <table class="table table-striped table-hover border">
+    <table class="table table-striped table-hover border">
       <thead class="table-dark">
-          <tr>
-              <th scope="col">Date</th>
-              {% if exercise_type == "cardio" %}
-                <th scope="col">Distance</th>    
-              {% else %}
-                <th scope="col">Weight</th>
-                <th scope="col">Reps</th>
-                <th scope="col">Count</th>
-              {% endif %}
-              <th scope="col">Actions</th>
-          </tr>
+        <tr class="text-center">
+          <th scope="col" class="py-2">Date</th>
+          {% if exercise_type == "cardio" %}
+            <th scope="col" class="py-2">Distance</th>    
+          {% elif exercise_type == "bodyweight" %}
+            <th scope="col" class="py-2">Count</th>
+          {% else %}
+            <th scope="col" class="py-2">Weight</th>
+            <th scope="col" class="py-2">Count</th>
+          {% endif %}
+          <th scope="col" class="py-2">Actions</th>
+        </tr>
       </thead>
       <tbody>
-          {% for exercise in exercises %}
-          <tr>
-              <td>{{ moment(exercise.date, local=True).format('LL') }}</td>
-              {% if exercise_type == "cardio" %}
-                  <td>{{ exercise.distance ~ ' mi' if exercise.distance is not none else '' }}</td>
-              {% else %}
-                  <td>{{ exercise.weight ~ ' lbs' if exercise.weight is not none else '' }}</td>
-                  <td>{{ exercise.reps or "" }}</td>
-                  <td>{{ exercise.count or "" }}</td>
-              {% endif %}
-              <td>
-                  <a href="{{ url_for('edit_exercise', workout_id=workout_id, exercise_id=exercise.id) }}" class="btn btn-primary btn-sm">
-                      Edit
-                  </a>
-                  <a href="{{ url_for('delete_exercise', workout_id=workout_id, exercise_id=exercise.id) }}" class="btn btn-danger btn-sm">
-                      Delete
-                  </a>
-              </td>
-          </tr>
-          {% endfor %}
+        {% for exercise in exercises %}
+        <tr class="text-center align-middle">
+          <td class="py-1">{{ moment(exercise.date, local=True).format('LL') }}</td>
+          {% if exercise_type == "cardio" %}
+            <td class="py-1">
+              {{ exercise.distance ~ ' mi' if exercise.distance is not none else '' }}
+            </td>
+          {% elif exercise_type == "bodyweight" %}
+            <td class="py-1">{{ exercise.count or "" }}</td>
+          {% else %}
+            <td class="py-1">
+              {{ exercise.weight ~ ' lbs' if exercise.weight is not none else '' }}
+            </td>
+            <td class="py-1">{{ exercise.count or "" }}</td>
+          {% endif %}
+          <td class="py-1">
+            <div class="btn-group w-100" role="group">
+              <a href="{{ url_for('edit_exercise', workout_id=workout_id, exercise_id=exercise.id) }}" class="btn btn-primary btn-sm flex-fill">
+                Edit
+              </a>
+              <a href="{{ url_for('delete_exercise', workout_id=workout_id, exercise_id=exercise.id) }}" class="btn btn-danger btn-sm flex-fill">
+                Delete
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
       </tbody>
-  </table>
-</div>
+    </table>
+  </div>
+  

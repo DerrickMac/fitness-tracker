@@ -2,11 +2,19 @@
 {% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
-{% if action != "edit" %}
-    <h1>{{ workout_name }}</h1>
-{% else %}
-    <h1>Editing {{ workout_name }}</h1>
-{% endif %}
+
+{% set exercise_icons = {
+  'machine': 'fa-solid fa-weight-hanging',
+  'free_weight': 'fas fa-dumbbell',
+  'bodyweight': 'fa-solid fa-child-reaching',
+  'cardio': 'fas fa-person-running'
+} %}
+
+{% set title_prefix = "Editing " if action == "edit" else "" %}
+<h1>
+  <i class="{{ exercise_icons[exercise_type] }}"></i> 
+  {{ title_prefix }}{{ workout_name }} 
+</h1>
 
 {{ wtf.quick_form(form) }}
 
@@ -32,7 +40,6 @@
 <script>
   const exerciseTypeSelect = "{{ exercise_type }}";
   const distance = document.getElementById("distance_container");
-  const reps = document.getElementById("reps_container");
   const weight = document.getElementById("weight_container");
   const count = document.getElementById("count_container");
 
@@ -40,12 +47,17 @@
       const value = exerciseTypeSelect;
 
       if (value === "cardio") {
-        weight.style.display = "none";
-        reps.style.display = "none";
         distance.style.display = "block";
+        weight.style.display = "none";
+        count.style.display = "none";
+
+      } else if (value === "bodyweight") {
+        weight.style.display = "none";
+        count.style.display = "block";
+        distance.style.display = "none";
+        
       } else {
         weight.style.display = "block";
-        reps.style.display = "block";
         count.style.display = "block";
         distance.style.display = "none";
       } 

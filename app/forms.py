@@ -61,7 +61,6 @@ class WorkoutForm(FlaskForm):
 class ExerciseForm(FlaskForm):
     date = DateTimeField('Date', format='%Y-%m-%d', default=datetime.now(), validators=[DataRequired()])
     weight = IntegerField('Weight (lbs)', validators=[Optional()])
-    reps = IntegerField('Reps', validators=[Optional()])
     count = IntegerField('Count', validators=[Optional()])
     distance = IntegerField('Distance (miles)', validators=[Optional()])
     submit = SubmitField('Submit')

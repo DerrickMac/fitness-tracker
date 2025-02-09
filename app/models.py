@@ -54,7 +54,6 @@ class Workout(db.Model):
 class Exercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[datetime] = mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
-    reps: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     count: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     weight: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     distance: Mapped[int] = mapped_column(Integer, nullable=True, default=None)

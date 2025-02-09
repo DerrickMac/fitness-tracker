@@ -116,18 +116,33 @@ def workouts():
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
     
-    # Get sorting criteria from the request (default to 'muscle_group')
-    order_by = request.args.get('order_by', 'default')
+    # Default ordering: by muscle_group (ascending) then by name (ascending)
+    workouts = current_user.workouts.order_by(
+        Workout.muscle_group.asc(), 
+        Workout.name.asc()
+    ).all()
 
-    # Define sorting logic
-    if order_by == 'exercise_type':
-        workouts = current_user.workouts.order_by(Workout.exercise_type.asc(), Workout.name.asc())
-    elif order_by == 'name':
-        workouts = current_user.workouts.order_by(Workout.name.asc())
-    else:  # Default: Order by muscle_group
-        workouts = current_user.workouts.order_by(Workout.muscle_group.asc(), Workout.name.asc())
+    # Group workouts by their muscle_group
+    grouped_workouts = {}
+    for workout in workouts:
+        group = workout.muscle_group or 'other'
+        grouped_workouts.setdefault(group, []).append(workout)
 
-    return render_template('workouts.html', title='Workouts', workouts=workouts, order_by=order_by)
+    # (Optional) Define the order in which muscle groups should appear
+    muscle_order = [
+        'abs', 'back', 'biceps', 'calves', 'chest', 'chest_lower', 'chest_upper',
+        'forearms', 'glutes', 'hamstrings', 'heart', 'hip_flexors', 'inner_thighs',
+        'lats', 'lower_back', 'quadriceps', 'shoulders', 'triceps', 'other'
+    ]
+    # Sort the dictionary keys according to the muscle_order list
+    grouped_workouts = dict(
+        sorted(
+            grouped_workouts.items(),
+            key=lambda item: muscle_order.index(item[0]) if item[0] in muscle_order else 999
+        )
+    )
+
+    return render_template('workouts.html', title='Workouts', grouped_workouts=grouped_workouts)
 
 @app.route('/create-workout', methods=['GET', 'POST'])
 @login_required
@@ -195,7 +210,6 @@ def log_exercise(workout_id):
         exercise = Exercise(
                     date=form.date.data,
                     weight=form.weight.data,
-                    reps=form.reps.data,
                     count=form.count.data,
                     distance=form.distance.data
                     )
@@ -235,7 +249,7 @@ def edit_exercise(workout_id, exercise_id):
     if form.validate_on_submit():
         exercise.date=form.date.data
         exercise.weight=form.weight.data
-        exercise.reps=form.reps.data
+        exercise.count=form.count.data
         exercise.distance=form.distance.data
         db.session.commit()
         flash("Exercise updated successfully!")
@@ -244,7 +258,7 @@ def edit_exercise(workout_id, exercise_id):
     elif request.method == 'GET':
         form.date.data = exercise.date
         form.weight.data = exercise.weight
-        form.reps.data = exercise.reps
+        form.count.data = exercise.count
         form.distance.data = exercise.distance
     return render_template('log_exercise.html', form=form, workout_id=workout_id, workout_name=user_workout.name, exercise_id=exercise_id, exercise_type=user_workout.exercise_type, action="edit")
 
