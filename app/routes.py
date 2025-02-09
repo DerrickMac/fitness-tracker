@@ -180,9 +180,10 @@ def log_exercise(workout_id):
     if form.validate_on_submit():
         exercise = Exercise(
                     date=form.date.data,
-                    weight=form.weight.data if user_workout.exercise_type == "machine" else None,
-                    reps=form.reps.data if user_workout.exercise_type == "machine" else None,
-                    distance=form.distance.data if user_workout.exercise_type == "cardio" else None
+                    weight=form.weight.data,
+                    reps=form.reps.data,
+                    count=form.count.data,
+                    distance=form.distance.data
                     )
         user_workout.exercises.append(exercise)
         db.session.commit()

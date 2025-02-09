@@ -48,13 +48,13 @@ class Workout(db.Model):
     exercise_type: Mapped[str] = mapped_column(String(64))
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), index=True)
     user: Mapped[User] = relationship(back_populates='workouts')
-
     exercises: Mapped[List["Exercise"]] = relationship(secondary='workout_exercise', back_populates="workouts")
 
 class Exercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[datetime] = mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     reps: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
+    count: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     weight: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     distance: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
     workouts: Mapped[List['Workout']] = relationship(secondary='workout_exercise', back_populates='exercises')

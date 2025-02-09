@@ -3,11 +3,12 @@
       <thead class="table-dark">
           <tr>
               <th scope="col">Date</th>
-              {% if exercise_type == "machine" %}
-                  <th scope="col">Weight</th>
-                  <th scope="col">Reps</th>
-              {% elif exercise_type == "cardio" %}
-                  <th scope="col">Distance</th>
+              {% if exercise_type == "cardio" %}
+                <th scope="col">Distance</th>    
+              {% else %}
+                <th scope="col">Weight</th>
+                <th scope="col">Reps</th>
+                <th scope="col">Count</th>
               {% endif %}
               <th scope="col">Actions</th>
           </tr>
@@ -16,11 +17,12 @@
           {% for exercise in exercises %}
           <tr>
               <td>{{ moment(exercise.date, local=True).format('LL') }}</td>
-              {% if exercise_type == "machine" %}
+              {% if exercise_type == "cardio" %}
+                  <td>{{ exercise.distance ~ ' mi' if exercise.distance is not none else '' }}</td>
+              {% else %}
                   <td>{{ exercise.weight ~ ' lbs' if exercise.weight is not none else '' }}</td>
                   <td>{{ exercise.reps or "" }}</td>
-              {% elif exercise_type == "cardio" %}
-                  <td>{{ exercise.distance ~ ' mi' if exercise.distance is not none else '' }}</td>
+                  <td>{{ exercise.count or "" }}</td>
               {% endif %}
               <td>
                   <a href="{{ url_for('edit_exercise', workout_id=workout_id, exercise_id=exercise.id) }}" class="btn btn-primary btn-sm">
