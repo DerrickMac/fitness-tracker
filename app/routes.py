@@ -116,33 +116,35 @@ def workouts():
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
     
-    # Default ordering: by muscle_group (ascending) then by name (ascending)
+    # Get the current date/time as an offset-aware datetime
+    today = datetime.now(timezone.utc)
+
+    # Query workouts, ordered by muscle_group then name
     workouts = current_user.workouts.order_by(
         Workout.muscle_group.asc(), 
         Workout.name.asc()
     ).all()
 
-    # Group workouts by their muscle_group
+    # Precompute the most recent exercise date for each workout
+    for workout in workouts:
+        # Collect all exercise dates (if any) for this workout
+        exercise_dates = [ex.date for ex in workout.exercises if ex.date is not None]
+        if exercise_dates:
+            last_done = max(exercise_dates)
+            # If last_done is naive, assume it's UTC and convert it to an aware datetime
+            if last_done.tzinfo is None:
+                last_done = last_done.replace(tzinfo=timezone.utc)
+            workout.last_done = last_done
+        else:
+            workout.last_done = None
+
+    # Group workouts by muscle_group
     grouped_workouts = {}
     for workout in workouts:
         group = workout.muscle_group or 'other'
         grouped_workouts.setdefault(group, []).append(workout)
 
-    # (Optional) Define the order in which muscle groups should appear
-    muscle_order = [
-        'abs', 'back', 'biceps', 'calves', 'chest', 'chest_lower', 'chest_upper',
-        'forearms', 'glutes', 'hamstrings', 'heart', 'hip_flexors', 'inner_thighs',
-        'lats', 'lower_back', 'quadriceps', 'shoulders', 'triceps', 'other'
-    ]
-    # Sort the dictionary keys according to the muscle_order list
-    grouped_workouts = dict(
-        sorted(
-            grouped_workouts.items(),
-            key=lambda item: muscle_order.index(item[0]) if item[0] in muscle_order else 999
-        )
-    )
-
-    return render_template('workouts.html', title='Workouts', grouped_workouts=grouped_workouts)
+    return render_template('workouts.html', title='Workouts', grouped_workouts=grouped_workouts, today=today)
 
 @app.route('/create-workout', methods=['GET', 'POST'])
 @login_required
