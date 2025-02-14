@@ -6,7 +6,7 @@ from app import db
 from app.main import bp
 from app.main.forms import EditProfileForm, WorkoutForm, ExerciseForm
 from app.models import Workout, Exercise
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 
 @bp.before_request
@@ -22,7 +22,8 @@ def get_workout_data():
     # Get all user's exercises by date
     unique_dates = (
         db.session.query(sa.func.date(Exercise.date))
-        .filter(Exercise.workout.has(Workout.user_id == current_user.id))
+        .join(Exercise.workouts)
+        .filter(Workout.user_id == current_user.id)
         .distinct()
         .all()
     )
@@ -241,5 +242,5 @@ def delete_exercise(workout_id, exercise_id):
     db.session.delete(exercise)
     db.session.commit()
     flash("Exercise deleted successfully!", "success")
-    
+
     return redirect(url_for('main.log_exercise', workout_id=workout_id))
