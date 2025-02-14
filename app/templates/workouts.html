@@ -1,7 +1,13 @@
-{% extends "base.html" %} {% import "bootstrap_wtf.html" as wtf %} {% block
-content %} {% set exercise_icons = { 'machine': 'fa-solid fa-weight-hanging',
-'free_weight': 'fas fa-dumbbell', 'bodyweight': 'fa-solid fa-child-reaching',
-'cardio': 'fas fa-person-running' } %}
+{% extends "base.html" %} 
+{% import "bootstrap_wtf.html" as wtf %} 
+{% block content %} 
+
+{% 
+  set exercise_icons = {'machine': 'fa-solid fa-weight-hanging',
+                        'free_weight': 'fas fa-dumbbell', 
+                        'bodyweight': 'fa-solid fa-child-reaching',
+                        'cardio': 'fas fa-person-running'} 
+%}
 
 <div class="container mt-4">
   <h1 class="text-center mb-4">🏋️‍♂️ My Workouts</h1>
@@ -27,9 +33,7 @@ content %} {% set exercise_icons = { 'machine': 'fa-solid fa-weight-hanging',
   <div class="row g-4">
     {% for workout in workouts %}
     <div class="col-md-6 col-lg-4">
-      <div
-        class="card shadow border-0 h-100 position-relative"
-      >
+      <div class="card shadow border-0 h-100 position-relative">
         <!-- Card Header -->
         <div
           class="card-header bg-white border-0 text-center position-relative"
@@ -95,7 +99,9 @@ content %} {% set exercise_icons = { 'machine': 'fa-solid fa-weight-hanging',
         </div>
 
         <!-- Card Footer: Last done date -->
-        <div class="card-footer text-muted text-center small {% if workout.last_done and (today - workout.last_done).days > 14 %}bg-danger{% endif %}">
+        <div
+          class="card-footer text-muted text-center small {% if workout.last_done and (today - workout.last_done).days > 14 %}bg-danger{% endif %}"
+        >
           {% if workout.last_done %} Last done: {{ moment(workout.last_done,
           local=True).format('LL') }} {% else %} Last done: Never {% endif %}
         </div>

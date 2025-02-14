@@ -15,11 +15,7 @@
   {%- elif field.type == 'DateTimeField' %}
     <div class="mb-3">
       {{ field.label(class='form-label') }}
-      {% if autofocus %}
-        {{ field(class='form-control', autofocus=True, type='date') }}
-      {% else %}
-        {{ field(class='form-control', type='date') }}
-      {% endif %}
+      {{ field(class='form-control', type='date') }}
       {%- for error in field.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {%- endfor %}
