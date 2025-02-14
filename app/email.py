@@ -2,6 +2,7 @@ from flask_mail import Message
 from threading import Thread
 from app import app, mail
 
+# Send reset email in the background to free up resources
 def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)

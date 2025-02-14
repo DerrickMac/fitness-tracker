@@ -1,31 +1,33 @@
 from flask_login import current_user, login_required
 from flask import render_template, flash, redirect, url_for, request, jsonify, current_app
+from collections import defaultdict
 import sqlalchemy as sa
 from app import db
 from app.main import bp
 from app.main.forms import EditProfileForm, WorkoutForm, ExerciseForm
 from app.models import Workout, Exercise
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 
 @bp.before_request
 def before_request():
     if current_user.is_authenticated:
+        # Social media app feature carried over from Flask tutorial
         current_user.last_seen = datetime.now(timezone.utc)
         db.session.commit()
 
 @bp.route('/api/workouts', methods=['GET'])
 @login_required
 def get_workout_data():
+    # Get all user's exercises by date
     unique_dates = (
         db.session.query(sa.func.date(Exercise.date))
-        .join(Exercise.workouts)  # join through the relationship
-        .filter(Workout.user_id == current_user.id)
+        .filter(Exercise.workout.has(Workout.user_id == current_user.id))
         .distinct()
         .all()
     )
-    # unique_dates is a list of one-element tuples containing date objects, e.g., [(date1,), (date2,), ...]
-    # Convert each date to an ISO formatted string and pair it with the value 1.
+    
+    # Format data as [date, value] pairs to properly feed data to the Google Charts activity calendar
     date_value_pairs = [[d, 1] for (d,) in unique_dates if d is not None]
     
     return jsonify(date_value_pairs)
@@ -64,39 +66,39 @@ def workouts():
     if not current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
-    # Get the current date/time as an offset-aware datetime
-    today = datetime.now(timezone.utc)
+    today = datetime.today()
 
-    # Query workouts, ordered by muscle_group then name
+    # If specific filtering in the Workouts page is requested, change this section
     workouts = current_user.workouts.order_by(
         Workout.muscle_group.asc(), 
         Workout.name.asc()
     ).all()
 
-    # Precompute the most recent exercise date for each workout
+    # Track the last completion date for each workout to guide future sessions
     for workout in workouts:
-        # Collect all exercise dates (if any) for this workout
         exercise_dates = [ex.date for ex in workout.exercises if ex.date is not None]
         if exercise_dates:
-            last_done = max(exercise_dates)
-            # If last_done is naive, assume it's UTC and convert it to an aware datetime
-            if last_done.tzinfo is None:
-                last_done = last_done.replace(tzinfo=timezone.utc)
-            workout.last_done = last_done
+            workout.last_done = max(exercise_dates)
         else:
             workout.last_done = None
+        
+        if not workout.last_done:
+            workout.is_stale = True
+        else:
+            workout.is_stale = (today - workout.last_done) > timedelta(days=14)
 
-    # Group workouts by muscle_group
-    grouped_workouts = {}
+    # Categorize workouts by muscle group so frontend can organize workouts appropriately
+    grouped_workouts = defaultdict(list)
     for workout in workouts:
         group = workout.muscle_group or 'other'
-        grouped_workouts.setdefault(group, []).append(workout)
+        grouped_workouts[group].append(workout)
 
-    return render_template('workouts.html', title='Workouts', grouped_workouts=grouped_workouts, today=today)
+    return render_template('workouts.html', title='Workouts', grouped_workouts=grouped_workouts)
 
 @bp.route('/create-workout', methods=['GET', 'POST'])
 @login_required
 def create_workout():
+
     form = WorkoutForm()
     if form.validate_on_submit():
         new_workout = Workout(
@@ -107,15 +109,21 @@ def create_workout():
         )
         db.session.add(new_workout)
         db.session.commit()
-
         flash("Workout created successfully!")
         return redirect(url_for('main.workouts'))
+    
     return render_template('workout_form.html', title='Create Workout', form=form, action="Create")
 
 @bp.route('/workouts/<int:workout_id>', methods=['GET', 'POST'])
 @login_required
 def edit_workout(workout_id):
     user_workout = Workout.query.get_or_404(workout_id)
+
+    # verify correct user is editing workout
+    if user_workout.user.id != current_user.id:
+        flash("You do not have permission to edit this workout", "ERROR")
+        return redirect(url_for('main.index'))
+    
     form = WorkoutForm()
     if form.validate_on_submit():
         user_workout.name=form.name.data, 
@@ -124,6 +132,8 @@ def edit_workout(workout_id):
         db.session.commit()
         flash("Workout edited successfully!")
         return redirect(url_for('main.workouts'))
+    
+    # Pre-populate edit form with existing workout data
     elif request.method == "GET":
         form.name.data = user_workout.name
         form.exercise_type.data = user_workout.exercise_type
@@ -179,12 +189,14 @@ def log_exercise(workout_id):
         if exercises_paginated.has_next else None
     prev_url = url_for('main.log_exercise', workout_id=workout_id, page=exercises_paginated.prev_num) \
         if exercises_paginated.has_prev else None
-    return render_template('log_exercise.html', title='Log Exercise', workout_id=workout_id, workout_name=user_workout.name, exercise_type=user_workout.exercise_type, form=form, exercises=exercises_paginated.items, next_url=next_url, prev_url=prev_url)
+    return render_template('log_exercise.html', title='Log Exercise', workout_id=workout_id, \
+        workout_name=user_workout.name, exercise_type=user_workout.exercise_type, form=form, \
+        exercises=exercises_paginated.items, next_url=next_url, prev_url=prev_url)
+
 
 @bp.route('/edit-exercise/<int:workout_id>/<int:exercise_id>', methods=['GET', 'POST'])
 @login_required
 def edit_exercise(workout_id, exercise_id):
-    # fetch specific workout
     user_workout = Workout.query.get_or_404(workout_id)
 
     # verify correct user is editing workout
@@ -193,8 +205,6 @@ def edit_exercise(workout_id, exercise_id):
         return redirect(url_for('main.index'))
     
     exercise = Exercise.query.filter_by(id=exercise_id).first_or_404()
-    print(exercise)
-
     form = ExerciseForm()
     if form.validate_on_submit():
         exercise.date=form.date.data
@@ -205,17 +215,21 @@ def edit_exercise(workout_id, exercise_id):
         flash("Exercise updated successfully!")
         return redirect(url_for('main.log_exercise', workout_id=workout_id))
 
+    # Pre-populate form data with existing exercise data
     elif request.method == 'GET':
         form.date.data = exercise.date
         form.weight.data = exercise.weight
         form.count.data = exercise.count
         form.distance.data = exercise.distance
-    return render_template('log_exercise.html', form=form, workout_id=workout_id, workout_name=user_workout.name, exercise_id=exercise_id, exercise_type=user_workout.exercise_type, action="edit")
+
+    return render_template('log_exercise.html', form=form, workout_id=workout_id, \
+        workout_name=user_workout.name, exercise_id=exercise_id, \
+        exercise_type=user_workout.exercise_type, action="edit")
+
 
 @bp.route('/delete-exercise/<int:workout_id>/<int:exercise_id>', methods=['GET'])
 @login_required
 def delete_exercise(workout_id, exercise_id):
-    # fetch specific workout
     workout = Workout.query.get_or_404(workout_id)
     
     # verify correct user is deleting exercise
@@ -224,9 +238,8 @@ def delete_exercise(workout_id, exercise_id):
         return redirect(url_for('main.index'))
     
     exercise = Exercise.query.filter_by(id=exercise_id).first_or_404()
-
     db.session.delete(exercise)
     db.session.commit()
-
     flash("Exercise deleted successfully!", "success")
+    
     return redirect(url_for('main.log_exercise', workout_id=workout_id))

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from datetime import datetime
 import unittest
+from sqlalchemy.exc import IntegrityError
 from app import create_app, db
 from app.models import User, Workout, Exercise
 from config import Config
@@ -34,6 +35,17 @@ class UserModelCase(unittest.TestCase):
                                          'd4c74594d841139328695756648b6bd6'
                                          '?d=identicon&s=128'))
 
+    def test_duplicate_username(self):
+        user1 = User(username='john', email='john@example.com')
+        db.session.add(user1)
+        db.session.commit()
+
+        user2 = User(username='john', email='john.doe@example.com') 
+        db.session.add(user2)
+
+        with self.assertRaises(IntegrityError):
+            db.session.commit() 
+            
 class WorkoutModelCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app(TestConfig)

@@ -18,7 +18,6 @@
     </a>
   </div>
 
-  <!-- (Optional) Icon Legend -->
   <div class="mb-3 p-2 bg-light rounded">
     <strong>Key:</strong>
     {% for key, icon_class in exercise_icons.items() %}
@@ -100,7 +99,7 @@
 
         <!-- Card Footer: Last done date -->
         <div
-          class="card-footer text-muted text-center small {% if workout.last_done and (today - workout.last_done).days > 14 %}bg-danger{% endif %}"
+          class="card-footer text-muted text-center small {% if workout.is_stale %}bg-danger{% endif %}"
         >
           {% if workout.last_done %} Last done: {{ moment(workout.last_done,
           local=True).format('LL') }} {% else %} Last done: Never {% endif %}

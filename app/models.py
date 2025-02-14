@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from flask import current_app
 from flask_login import UserMixin
 from typing import Optional, List
-from sqlalchemy import String, Integer, ForeignKey, Table, Column
+from sqlalchemy import String, Boolean, Integer, ForeignKey, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db, login
 
@@ -68,6 +68,7 @@ class Workout(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey(User.id), index=True)
     user: Mapped[User] = relationship(back_populates='workouts')
     exercises: Mapped[List["Exercise"]] = relationship(secondary='workout_exercise', back_populates="workouts")
+    is_stale: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
 
 class Exercise(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
