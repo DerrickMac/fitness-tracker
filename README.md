@@ -38,7 +38,7 @@ Follow these step‐by‐step instructions to get the application up and running
 
     Set these environment variables in your own .env file:
 
-    SECRET_KEY: "enter your own secret key"
+    SECRET_KEY: "enter your own secret key"  
     SQLALCHEMY_DATABASE_URI: "sqlite:///app.db" # for a local database, or add a postgresSQL URI for production.
 
 5. **Initialize the Database**
