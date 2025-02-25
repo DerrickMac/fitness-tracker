@@ -15,21 +15,21 @@
   {%- elif field.type == 'DateTimeField' %}
     <div class="mb-3">
       {{ field.label(class='form-label') }}
-      {{ field(class='form-control', type='date') }}
+      {{ field(class='form-control', type='date', **({'autocomplete': autocomplete} if autocomplete else {})) }}
       {%- for error in field.errors %}
         <div class="invalid-feedback">{{ error }}</div>
       {%- endfor %}
     </div>  
   {%- elif field.type == 'SelectField' %}
     {{ field.label(class='form-label') }}
-    {{ field(class='form-select mb-3') }}
+    {{ field(class='form-select mb-3', **({'autocomplete': autocomplete} if autocomplete else {})) }}
   {%- elif field.type == 'TextAreaField' %}
   <div class="mb-3">
     {{ field.label(class='form-label') }}
     {% if autofocus %}
-      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), autofocus=True) }}
+      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), autofocus=True, **({'autocomplete': autocomplete} if autocomplete else {})) }}
     {% else %}
-      {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), **({'autocomplete': autocomplete} if autocomplete else {})) }}
     {% endif %}
     {%- for error in field.errors %}
     <div class="invalid-feedback">{{ error }}</div>
@@ -41,9 +41,9 @@
   <div class="mb-3" id="{{ field.id }}_container">
     {{ field.label(class='form-label') }}
     {% if autofocus %}
-      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), autofocus=True) }}
+      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), autofocus=True, **({'autocomplete': autocomplete} if autocomplete else {})) }}
     {% else %}
-      {{ field(class='form-control' + (' is-invalid' if field.errors else '')) }}
+      {{ field(class='form-control' + (' is-invalid' if field.errors else ''), **({'autocomplete': autocomplete} if autocomplete else {})) }}
     {% endif %}
     {%- for error in field.errors %}
     <div class="invalid-feedback">{{ error }}</div>
@@ -52,7 +52,7 @@
   {%- endif %}
 {% endmacro %}
 
-{% macro quick_form(form, action="", method="post", id="", novalidate=False) %}
+{% macro quick_form(form, action="", method="post", id="", novalidate=False, autocomplete_map={}) %}
 <form
   {%- if action != None %} action="{{ action }}"{% endif -%}
   {%- if method %} method="{{ method }}"{% endif %}
@@ -70,7 +70,7 @@
   {% set ns = namespace(first_field=true) %}
   {%- for field in form %}
     {% if field.widget.input_type != 'hidden' -%}
-      {{ form_field(field, ns.first_field) }}
+      {{ form_field(field, ns.first_field, autocomplete_map.get(field.name)) }}
       {% set ns.first_field = false %}
     {%- endif %}
   {%- endfor %}  
