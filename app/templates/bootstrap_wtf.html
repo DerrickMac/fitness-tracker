@@ -1,4 +1,4 @@
-{% macro form_field(field, autofocus) %}
+{% macro form_field(field, autofocus, autocomplete=None) %}
   {%- if field.type == 'BooleanField' %}
   <div class="form-check mb-3">
     {{ field(class='form-check-input') }}

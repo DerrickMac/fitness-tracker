@@ -1,70 +1,43 @@
-2025-01-08 09:18:37,066 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 09:18:57,967 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 09:36:19,682 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:14:59,072 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:21:08,346 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:21:19,225 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:21:23,628 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:24:35,687 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:40:46,477 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:40:49,453 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-08 18:40:59,009 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-10 22:54:29,215 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 16:42:19,150 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:39:44,571 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:43:18,683 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:44:35,645 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:45:13,980 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:45:29,345 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-14 21:46:48,710 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:29]
-2025-01-29 16:55:23,097 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:31]
-2025-01-29 16:56:21,277 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:31]
-2025-02-13 21:51:33,876 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:33,891 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:33,891 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:34,283 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:34,283 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:34,283 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,116 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,131 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,131 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,506 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,506 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:51:53,506 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,286 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,300 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,300 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,679 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,679 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:53:02,679 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,547 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,561 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,561 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,940 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,940 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 21:57:34,940 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,011 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,025 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,025 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,405 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,405 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:01:22,405 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:16:02,123 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,962 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,976 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,976 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,986 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,986 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:12,986 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:13,363 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:13,363 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:13,363 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-13 22:34:13,363 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-14 00:42:10,728 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-14 00:42:20,577 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 14:37:04,629 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 14:50:00,685 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 14:52:58,966 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 15:00:27,897 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 15:03:43,844 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
-2025-02-25 16:55:56,245 INFO: Fitness Tracker startup [in C:\Users\miilo\Desktop\fitness-tracker\app\__init__.py:49]
+2025-02-25 17:04:59,996 ERROR: Exception on /auth/login [GET] [in C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\app.py:875]
+Traceback (most recent call last):
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\app\auth\routes.py", line 34, in login
+    return render_template('auth/login.html', title='Sign In', form=form)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\miilo\Desktop\fitness-tracker\app\templates\auth\login.html", line 2, in top-level template code
+    {% import "bootstrap_wtf.html" as wtf %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\app\templates\base.html", line 60, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\app\templates\auth\login.html", line 6, in block 'content'
+    {{ wtf.quick_form(form) }}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\venv\Lib\site-packages\jinja2\runtime.py", line 784, in _invoke
+    rv = self._func(*arguments)
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\miilo\Desktop\fitness-tracker\app\templates\bootstrap_wtf.html", line 73, in template
+    {{ form_field(field, ns.first_field, autocomplete_map.get(field.name)) }}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: macro 'form_field' takes not more than 2 argument(s)
